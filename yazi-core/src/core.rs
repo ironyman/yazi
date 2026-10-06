@@ -3,7 +3,7 @@ use yazi_shared::Layer;
 use yazi_shim::ratatui::Padable;
 use yazi_tty::sequence::SetCursorStyle;
 
-use crate::{cmp::Cmp, confirm::Confirm, help::Help, input::{Input, InputGuard}, mgr::Mgr, notify::Notify, pick::Pick, tab::Tab, tasks::Tasks, which::Which};
+use crate::{cmp::Cmp, confirm::Confirm, help::Help, input::{Input, InputGuard}, mgr::Mgr, notify::Notify, palette::Palette, pick::Pick, tab::Tab, tasks::Tasks, which::Which};
 
 pub struct Core {
 	pub mgr:     Mgr,
@@ -12,6 +12,7 @@ pub struct Core {
 	pub input:   Input,
 	pub confirm: Confirm,
 	pub help:    Help,
+	pub palette: Palette,
 	pub cmp:     Cmp,
 	pub which:   Which,
 	pub notify:  Notify,
@@ -26,6 +27,7 @@ impl Core {
 			input:   Default::default(),
 			confirm: Default::default(),
 			help:    Default::default(),
+			palette: Default::default(),
 			cmp:     Default::default(),
 			which:   Default::default(),
 			notify:  Default::default(),
@@ -36,6 +38,11 @@ impl Core {
 		if let Some(cursor) = self.help.cursor() {
 			let Rect { x, y, .. } = self.mgr.area(self.help.position).padding(self.help.padding());
 			return Some((Position { x: x + cursor, y }, self.help.cursor_shape()?));
+		}
+
+		if let Some(cursor) = self.palette.cursor() {
+			let Rect { x, y, .. } = self.mgr.area(self.palette.position).padding(self.palette.padding());
+			return Some((Position { x: x + cursor, y }, self.palette.cursor_shape()?));
 		}
 
 		if let Some(guard) = self.input.lock() {
@@ -56,6 +63,8 @@ impl Core {
 			Layer::Cmp
 		} else if self.help.visible {
 			Layer::Help
+		} else if self.palette.visible {
+			Layer::Palette
 		} else if self.confirm.visible {
 			Layer::Confirm
 		} else if self.input.focus() {

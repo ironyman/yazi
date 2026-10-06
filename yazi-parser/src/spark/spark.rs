@@ -115,6 +115,13 @@ pub enum Spark<'a> {
 	HelpEscape(crate::VoidForm),
 	HelpToggle(crate::help::ToggleForm),
 
+	// Palette
+	PaletteArrow(crate::ArrowForm),
+	PaletteClose(crate::help::CloseForm),
+	PaletteCycle(crate::ArrowForm),
+	PaletteEscape(crate::VoidForm),
+	PaletteShow(crate::VoidForm),
+
 	// Input
 	InputBackspace(yazi_widgets::input::parser::BackspaceOpt),
 	InputBackward(yazi_widgets::input::parser::BackwardOpt),
@@ -316,6 +323,13 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::HelpEscape(b) => b.into_lua(lua),
 			Self::HelpToggle(b) => b.into_lua(lua),
 
+			// Palette
+			Self::PaletteArrow(b) => b.into_lua(lua),
+			Self::PaletteClose(b) => b.into_lua(lua),
+			Self::PaletteCycle(b) => b.into_lua(lua),
+			Self::PaletteEscape(b) => b.into_lua(lua),
+			Self::PaletteShow(b) => b.into_lua(lua),
+
 			// Input
 			Self::InputBackspace(b) => b.into_lua(lua),
 			Self::InputBackward(b) => b.into_lua(lua),
@@ -409,7 +423,7 @@ try_from_spark!(crate::cmp::ShowForm, cmp:show);
 try_from_spark!(crate::cmp::TriggerForm, cmp:trigger);
 try_from_spark!(crate::confirm::CloseForm, confirm:close);
 try_from_spark!(crate::confirm::ShowForm, confirm:show);
-try_from_spark!(crate::help::CloseForm, help:close);
+try_from_spark!(crate::help::CloseForm, help:close, palette:close);
 try_from_spark!(crate::help::ToggleForm, help:toggle);
 try_from_spark!(crate::input::CloseForm, input:close);
 try_from_spark!(crate::mgr::BulkExitForm, mgr:bulk_exit);

@@ -29,6 +29,7 @@ pub struct Theme {
 	pub cmp:       Cmp,
 	pub tasks:     Tasks,
 	pub help:      Help,
+	pub palette:   Palette,
 
 	// File-specific styles
 	pub filetype: Filetype,
@@ -268,6 +269,15 @@ pub struct Help {
 	pub border:  SyncCell<Style>,
 	pub chord:   SyncCell<Style>,
 	pub action:  SyncCell<Style>,
+	pub hovered: SyncCell<Style>,
+}
+
+// --- Palette
+#[derive(Deserialize, DeserializeOver, DeserializeOver2, Overlay)]
+pub struct Palette {
+	pub border:  SyncCell<Style>,
+	pub chord:   SyncCell<Style>,
+	pub setting: SyncCell<Style>,
 	pub hovered: SyncCell<Style>,
 }
 

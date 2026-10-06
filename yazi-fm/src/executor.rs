@@ -25,6 +25,7 @@ impl<'a> Executor<'a> {
 			Layer::Input => self.input(action),
 			Layer::Confirm => self.confirm(action),
 			Layer::Help => self.help(action),
+			Layer::Palette => self.palette(action),
 			Layer::Cmp => self.cmp(action),
 			Layer::Which => self.which(action),
 			Layer::Notify => self.notify(action),
@@ -154,6 +155,8 @@ impl<'a> Executor<'a> {
 		match action.name.as_ref() {
 			// Help
 			"help" => act!(help:toggle, cx, Layer::Mgr),
+			// Palette
+			"palette" => act!(palette:show, cx),
 			// Plugin
 			"plugin" => act!(app:plugin, cx, action),
 			// Lua
@@ -333,6 +336,35 @@ impl<'a> Executor<'a> {
 			_ => {
 				cx.help.input.execute(action)?;
 				cx.help.filter_apply();
+				succ!()
+			}
+		}
+	}
+
+	fn palette(&mut self, action: ActionCow) -> Result<Data> {
+		let cx = &mut Ctx::new(&action, &mut self.app.core, &mut self.app.term)?;
+
+		macro_rules! on {
+			($name:ident) => {
+				if action.name == stringify!($name) {
+					return act!(palette:$name, cx, action);
+				}
+			};
+		}
+
+		on!(escape);
+		on!(arrow);
+		on!(cycle);
+		on!(close);
+
+		match action.name.as_ref() {
+			// Plugin
+			"plugin" => act!(app:plugin, cx, action),
+			// Lua
+			"lua" => act!(app:lua, cx, action),
+			_ => {
+				cx.palette.input.execute(action)?;
+				cx.palette.filter_apply();
 				succ!()
 			}
 		}

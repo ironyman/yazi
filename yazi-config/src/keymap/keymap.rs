@@ -18,6 +18,7 @@ pub struct Keymap {
 	input:   KeymapSection,
 	confirm: KeymapSection,
 	help:    KeymapSection,
+	palette: KeymapSection,
 	cmp:     KeymapSection,
 }
 
@@ -41,6 +42,7 @@ impl Keymap {
 			L::Input => &self.input,
 			L::Confirm => &self.confirm,
 			L::Help => &self.help,
+			L::Palette => &self.palette,
 			L::Cmp => &self.cmp,
 			L::Which => None?,
 			L::Notify => None?,

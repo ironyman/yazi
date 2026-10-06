@@ -2,11 +2,13 @@ use serde::Deserialize;
 use yazi_binding::position::{Offset, Origin, Position};
 use yazi_codegen::{DeserializeOver, DeserializeOver2};
 use yazi_shared::{spec::Encode as EncodeSpec, url::Url};
+use yazi_shim::cell::SyncCell;
 use yazi_widgets::input::InputOpt;
 
 #[derive(Deserialize, DeserializeOver, DeserializeOver2)]
 pub struct Input {
 	pub cursor_blink: bool,
+	pub vim_mode:     SyncCell<bool>,
 
 	// cd
 	cd_title:  String,

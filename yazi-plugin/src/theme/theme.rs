@@ -23,6 +23,7 @@ pub(crate) fn compose() -> Composer<ComposerGet, ComposerSet> {
 			b"cmp" => cmp(),
 			b"tasks" => tasks(),
 			b"help" => help(),
+			b"palette" => palette(),
 			b"icon" => icon(),
 			_ => return custom(lua, key),
 		}
@@ -365,6 +366,24 @@ fn help() -> Composer<ComposerGet, ComposerSet> {
 			b"border" => Style::from(&t.border).into_lua(lua),
 			b"chord" => Style::from(&t.chord).into_lua(lua),
 			b"action" => Style::from(&t.action).into_lua(lua),
+			b"hovered" => Style::from(&t.hovered).into_lua(lua),
+
+			_ => Ok(Value::Nil),
+		}
+	}
+
+	fn set(_: &Lua, _: &[u8], value: Value) -> mlua::Result<Value> { Ok(value) }
+
+	Composer::new(get, set)
+}
+
+fn palette() -> Composer<ComposerGet, ComposerSet> {
+	fn get(lua: &Lua, key: &[u8]) -> mlua::Result<Value> {
+		let t = &THEME.palette;
+		match key {
+			b"border" => Style::from(&t.border).into_lua(lua),
+			b"chord" => Style::from(&t.chord).into_lua(lua),
+			b"setting" => Style::from(&t.setting).into_lua(lua),
 			b"hovered" => Style::from(&t.hovered).into_lua(lua),
 
 			_ => Ok(Value::Nil),

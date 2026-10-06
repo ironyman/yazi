@@ -1,4 +1,5 @@
 use anyhow::Result;
+use yazi_config::YAZI;
 use yazi_macro::{render, succ};
 use yazi_parser::VoidForm;
 use yazi_shared::data::Data;
@@ -20,12 +21,16 @@ impl Actor for Escape {
 		};
 
 		let (mode, op) = (guard.snap().mode, guard.snap().op);
-		act!(escape, guard)?;
+		let vim = YAZI.input.vim_mode.get();
+		if vim || mode != M::Insert {
+			act!(escape, guard)?;
+		}
 
 		drop(guard);
 		match mode {
 			M::Normal if op == InputOp::None => act!(input:close, cx),
-			M::Insert => act!(cmp:close, cx),
+			M::Insert if vim || cx.cmp.visible => act!(cmp:close, cx),
+			M::Insert => act!(input:close, cx),
 			M::Normal | M::Replace => Ok(().into()),
 		}?;
 

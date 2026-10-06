@@ -162,6 +162,9 @@ keymap = [
 	# Help
 	{ on = "~",    run = "help", desc = "Open help" },
 	{ on = "<F1>", run = "help", desc = "Open help" },
+
+	# Palette
+	{ on = "<C-p>", run = "palette", desc = "Open command palette" },
 ]
 
 [tasks]
@@ -386,4 +389,26 @@ keymap = [
 
 	{ on = "<C-p>", run = "arrow prev", desc = "Previous line" },
 	{ on = "<C-n>", run = "arrow next", desc = "Next line" },
+]
+
+[palette]
+
+keymap = [
+	{ on = "<Esc>",   run = "escape",         desc = "Enter normal mode, or hide command palette" },
+	{ on = "<C-[>",   run = "escape",         desc = "Enter normal mode, or hide command palette" },
+	{ on = "<C-c>",   run = "close",          desc = "Close command palette" },
+	{ on = "<Enter>", run = "close --submit", desc = "Run the command, or change the setting" },
+
+	{ on = "<Tab>",   run = "cycle next", desc = "Cycle the setting forward" },
+	{ on = "<S-Tab>", run = "cycle prev", desc = "Cycle the setting backward" },
+
+	# Navigation
+	{ on = "k", run = "arrow prev", desc = "Previous item" },
+	{ on = "j", run = "arrow next", desc = "Next item" },
+
+	{ on = "<Up>",   run = "arrow prev", desc = "Previous item" },
+	{ on = "<Down>", run = "arrow next", desc = "Next item" },
+
+	{ on = "<C-p>", run = "arrow prev", desc = "Previous item" },
+	{ on = "<C-n>", run = "arrow next", desc = "Next item" },
 ]

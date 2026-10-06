@@ -22,6 +22,10 @@ impl<'a> Router<'a> {
 			return Ok(true);
 		}
 
+		if core.palette.visible && core.palette.r#type(&key)? {
+			return Ok(true);
+		}
+
 		if let Some(mut guard) = core.input.lock_mut()
 			&& guard.r#type(&key)?
 		{
@@ -36,6 +40,9 @@ impl<'a> Router<'a> {
 				self.matches(layer, layer, key)
 			}
 			L::Help => self.matches(L::Help, L::Help, key) || self.matches(L::Input, L::Help, key),
+			L::Palette => {
+				self.matches(L::Palette, L::Palette, key) || self.matches(L::Input, L::Palette, key)
+			}
 			L::Cmp => self.matches(L::Cmp, L::Cmp, key) || self.matches(L::Input, L::Input, key),
 			L::Which => core.which.r#type(key),
 		})

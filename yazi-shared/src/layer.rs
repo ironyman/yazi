@@ -31,6 +31,7 @@ pub enum Layer {
 	Input,
 	Confirm,
 	Help,
+	Palette,
 	Cmp,
 	Which,
 	Notify,

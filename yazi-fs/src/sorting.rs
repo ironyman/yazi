@@ -1,9 +1,19 @@
 use serde::{Deserialize, Serialize};
-use strum::{EnumString, IntoStaticStr};
+use strum::{EnumString, IntoStaticStr, VariantNames};
 
 // --- by
 #[derive(
-	Clone, Copy, Debug, Default, Deserialize, EnumString, Eq, IntoStaticStr, PartialEq, Serialize,
+	Clone,
+	Copy,
+	Debug,
+	Default,
+	Deserialize,
+	EnumString,
+	Eq,
+	IntoStaticStr,
+	PartialEq,
+	Serialize,
+	VariantNames,
 )]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
@@ -22,7 +32,17 @@ pub enum SortBy {
 
 // --- fallback
 #[derive(
-	Clone, Copy, Debug, Default, Deserialize, EnumString, Eq, IntoStaticStr, PartialEq, Serialize,
+	Clone,
+	Copy,
+	Debug,
+	Default,
+	Deserialize,
+	EnumString,
+	Eq,
+	IntoStaticStr,
+	PartialEq,
+	Serialize,
+	VariantNames,
 )]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]

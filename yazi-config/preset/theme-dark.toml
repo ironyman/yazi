@@ -235,6 +235,17 @@ hovered = { reversed = true, bold = true }
 # : }}}
 
 
+# : Command palette {{{
+
+[palette]
+border  = { fg = "blue" }
+chord   = { fg = "cyan" }
+setting = { fg = "yellow" }
+hovered = { reversed = true, bold = true }
+
+# : }}}
+
+
 # : Search {{{
 
 [fd]
