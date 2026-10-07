@@ -29,7 +29,7 @@ impl ShellOpt {
 	}
 }
 
-pub(crate) async fn shell(opt: ShellOpt) -> Result<Child> {
+pub async fn shell(opt: ShellOpt) -> Result<Child> {
 	let (cwd, opt) =
 		task::spawn_blocking(move || (Cwd::ensure(opt.cwd.as_url()).into_owned(), opt)).await?;
 

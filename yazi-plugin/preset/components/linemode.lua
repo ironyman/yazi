@@ -69,9 +69,14 @@ function Linemode:padding()
 		return " "
 	end
 
-	local style = Entity:new(self._file):style_rev()
+	local close, entity = th.indicator.padding.close, Entity:new(self._file)
+	if close:match("^%s*$") then
+		return ui.Span(close):style(entity:style())
+	end
+
+	local style = entity:style_rev()
 	if style then
-		return ui.Span(th.indicator.padding.close):style(style)
+		return ui.Span(close):style(style)
 	else
 		return " "
 	end

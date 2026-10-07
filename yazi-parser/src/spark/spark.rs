@@ -117,10 +117,17 @@ pub enum Spark<'a> {
 
 	// Palette
 	PaletteArrow(crate::ArrowForm),
-	PaletteClose(crate::help::CloseForm),
+	PaletteClose(crate::palette::CloseForm),
+	PaletteComplete(crate::VoidForm),
 	PaletteCycle(crate::ArrowForm),
 	PaletteEscape(crate::VoidForm),
-	PaletteShow(crate::VoidForm),
+	PaletteShow(crate::palette::ShowForm),
+	PaletteUpdateFiles(crate::palette::UpdateFilesForm),
+
+	// Pager
+	PagerArrow(crate::ArrowForm),
+	PagerClose(crate::VoidForm),
+	PagerPush(crate::pager::PushForm),
 
 	// Input
 	InputBackspace(yazi_widgets::input::parser::BackspaceOpt),
@@ -326,9 +333,16 @@ impl<'a> IntoLua for Spark<'a> {
 			// Palette
 			Self::PaletteArrow(b) => b.into_lua(lua),
 			Self::PaletteClose(b) => b.into_lua(lua),
+			Self::PaletteComplete(b) => b.into_lua(lua),
 			Self::PaletteCycle(b) => b.into_lua(lua),
 			Self::PaletteEscape(b) => b.into_lua(lua),
 			Self::PaletteShow(b) => b.into_lua(lua),
+			Self::PaletteUpdateFiles(b) => b.into_lua(lua),
+
+			// Pager
+			Self::PagerArrow(b) => b.into_lua(lua),
+			Self::PagerClose(b) => b.into_lua(lua),
+			Self::PagerPush(b) => b.into_lua(lua),
 
 			// Input
 			Self::InputBackspace(b) => b.into_lua(lua),
@@ -423,9 +437,13 @@ try_from_spark!(crate::cmp::ShowForm, cmp:show);
 try_from_spark!(crate::cmp::TriggerForm, cmp:trigger);
 try_from_spark!(crate::confirm::CloseForm, confirm:close);
 try_from_spark!(crate::confirm::ShowForm, confirm:show);
-try_from_spark!(crate::help::CloseForm, help:close, palette:close);
+try_from_spark!(crate::help::CloseForm, help:close);
 try_from_spark!(crate::help::ToggleForm, help:toggle);
 try_from_spark!(crate::input::CloseForm, input:close);
+try_from_spark!(crate::pager::PushForm, pager:push);
+try_from_spark!(crate::palette::CloseForm, palette:close);
+try_from_spark!(crate::palette::ShowForm, palette:show);
+try_from_spark!(crate::palette::UpdateFilesForm, palette:update_files);
 try_from_spark!(crate::mgr::BulkExitForm, mgr:bulk_exit);
 try_from_spark!(crate::mgr::CdForm, mgr:cd);
 try_from_spark!(crate::mgr::CloseForm, mgr:close);

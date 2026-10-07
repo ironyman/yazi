@@ -22,6 +22,10 @@ impl TryFrom<[u16; 3]> for MgrRatio {
 	}
 }
 
+impl From<MgrRatio> for [u16; 3] {
+	fn from(ratio: MgrRatio) -> Self { [ratio.parent, ratio.current, ratio.preview] }
+}
+
 impl TryFrom<Table> for MgrRatio {
 	type Error = mlua::Error;
 

@@ -54,6 +54,7 @@ send_key() {
 		C-S-p) "${Z[@]}" action write 27 91 49 49 50 59 54 117 ;; # ESC [112;6u (kitty protocol)
 		C-p) "${Z[@]}" action write 16 ;;
 		enter) "${Z[@]}" action write 13 ;;
+		C-enter) "${Z[@]}" action write 27 91 49 51 59 53 117 ;; # ESC [13;5u (kitty protocol)
 		tab) "${Z[@]}" action write 9 ;;
 		S-tab) "${Z[@]}" action write 27 91 90 ;; # ESC [Z
 		esc) "${Z[@]}" action write 27 91 50 55 117 ;; # ESC [27u, unambiguous unlike a bare ESC

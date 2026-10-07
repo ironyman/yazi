@@ -26,6 +26,7 @@ impl<'a> Executor<'a> {
 			Layer::Confirm => self.confirm(action),
 			Layer::Help => self.help(action),
 			Layer::Palette => self.palette(action),
+			Layer::Pager => self.pager(action),
 			Layer::Cmp => self.cmp(action),
 			Layer::Which => self.which(action),
 			Layer::Notify => self.notify(action),
@@ -156,7 +157,7 @@ impl<'a> Executor<'a> {
 			// Help
 			"help" => act!(help:toggle, cx, Layer::Mgr),
 			// Palette
-			"palette" => act!(palette:show, cx),
+			"palette" => act!(palette:show, cx, action),
 			// Plugin
 			"plugin" => act!(app:plugin, cx, action),
 			// Lua
@@ -356,6 +357,8 @@ impl<'a> Executor<'a> {
 		on!(arrow);
 		on!(cycle);
 		on!(close);
+		on!(complete);
+		on!(update_files);
 
 		match action.name.as_ref() {
 			// Plugin
@@ -367,6 +370,32 @@ impl<'a> Executor<'a> {
 				cx.palette.filter_apply();
 				succ!()
 			}
+		}
+	}
+
+	fn pager(&mut self, action: ActionCow) -> Result<Data> {
+		let cx = &mut Ctx::new(&action, &mut self.app.core, &mut self.app.term)?;
+
+		macro_rules! on {
+			($name:ident) => {
+				if action.name == stringify!($name) {
+					return act!(pager:$name, cx, action);
+				}
+			};
+		}
+
+		on!(arrow);
+		on!(close);
+		on!(push);
+
+		match action.name.as_ref() {
+			// Help
+			"help" => act!(help:toggle, cx, Layer::Pager),
+			// Plugin
+			"plugin" => act!(app:plugin, cx, action),
+			// Lua
+			"lua" => act!(app:lua, cx, action),
+			_ => succ!(),
 		}
 	}
 

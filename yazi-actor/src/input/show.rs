@@ -27,7 +27,7 @@ impl Actor for Show {
 		input.main.visible = true;
 
 		opt.styles = (&THEME.input).into();
-		opt.blinking = YAZI.input.cursor_blink;
+		opt.blinking = YAZI.input.cursor_blink.get();
 		*input.main.deref_mut() = yazi_widgets::input::Input::new(opt)?;
 		input.main.repos(area);
 

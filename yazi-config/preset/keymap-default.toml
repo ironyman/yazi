@@ -80,7 +80,7 @@ keymap = [
 	{ on = "A",         run = "bulk_create",                 desc = "Bulk create files" },
 	{ on = "r",         run = "rename --cursor=before_ext",  desc = "Rename selected file(s)" },
 	{ on = ";",         run = "shell --interactive",         desc = "Run a shell command" },
-	{ on = ":",         run = "shell --block --interactive", desc = "Run a shell command (block until finishes)" },
+	{ on = ":",         run = "palette",                     desc = "Open command palette" },
 	{ on = ".",         run = "hidden toggle",               desc = "Toggle the visibility of hidden files" },
 	{ on = "s",         run = "plugin fd",                   desc = "Search files by name via fd" },
 	{ on = "S",         run = "plugin rg",                   desc = "Search files by content via ripgrep" },
@@ -164,7 +164,7 @@ keymap = [
 	{ on = "<F1>", run = "help", desc = "Open help" },
 
 	# Palette
-	{ on = "<C-p>", run = "palette", desc = "Open command palette" },
+	{ on = "<C-p>", run = "palette file", desc = "Go to file" },
 ]
 
 [tasks]
@@ -288,7 +288,6 @@ keymap = [
 	# Delete
 	{ on = "<Backspace>", run = "backspace",         desc = "Delete the character before the cursor" },
 	{ on = "<Delete>",    run = "backspace --under", desc = "Delete the character under the cursor" },
-	{ on = "<C-h>",       run = "backspace",         desc = "Delete the character before the cursor" },
 	{ on = "<C-d>",       run = "backspace --under", desc = "Delete the character under the cursor" },
 
 	# Kill
@@ -297,6 +296,7 @@ keymap = [
 	{ on = "<C-w>",         run = "kill backward", desc = "Kill backwards to the start of the current word" },
 	{ on = "<A-d>",         run = "kill forward",  desc = "Kill forwards to the end of the current word" },
 	{ on = "<C-Backspace>", run = "kill backward", desc = "Kill backwards to the start of the current word" },
+	{ on = "<C-h>",         run = "kill backward", desc = "Kill backwards to the start of the current word (Ctrl+Backspace in most terminals)" },
 	{ on = "<C-Delete>",    run = "kill forward",  desc = "Kill forwards to the end of the current word" },
 
 	# Cut/Yank/Paste
@@ -397,9 +397,11 @@ keymap = [
 	{ on = "<Esc>",   run = "escape",         desc = "Enter normal mode, or hide command palette" },
 	{ on = "<C-[>",   run = "escape",         desc = "Enter normal mode, or hide command palette" },
 	{ on = "<C-c>",   run = "close",          desc = "Close command palette" },
-	{ on = "<Enter>", run = "close --submit", desc = "Run the command, or change the setting" },
+	{ on = "<Enter>",   run = "close --submit",         desc = "Run the command, open the file, or change the setting" },
+	{ on = "<C-Enter>", run = "close --submit --pager", desc = "Run the shell command and show its output" },
+	{ on = "<C-j>",     run = "close --submit --pager", desc = "Run the shell command and show its output" },
 
-	{ on = "<Tab>",   run = "cycle next", desc = "Cycle the setting forward" },
+	{ on = "<Tab>",   run = "complete",   desc = "Complete the suggestion, or cycle the setting forward" },
 	{ on = "<S-Tab>", run = "cycle prev", desc = "Cycle the setting backward" },
 
 	# Navigation
@@ -411,4 +413,34 @@ keymap = [
 
 	{ on = "<C-p>", run = "arrow prev", desc = "Previous item" },
 	{ on = "<C-n>", run = "arrow next", desc = "Next item" },
+
+	{ on = "<PageUp>",   run = "arrow -100%", desc = "Previous page" },
+	{ on = "<PageDown>", run = "arrow 100%",  desc = "Next page" },
+]
+
+[pager]
+
+keymap = [
+	{ on = "<Esc>", run = "close", desc = "Close the pager, and stop the command" },
+	{ on = "<C-[>", run = "close", desc = "Close the pager, and stop the command" },
+	{ on = "<C-c>", run = "close", desc = "Close the pager, and stop the command" },
+	{ on = "q",     run = "close", desc = "Close the pager, and stop the command" },
+
+	# Navigation
+	{ on = "k", run = "arrow -1", desc = "Scroll up one line" },
+	{ on = "j", run = "arrow 1",  desc = "Scroll down one line" },
+
+	{ on = "<Up>",   run = "arrow -1", desc = "Scroll up one line" },
+	{ on = "<Down>", run = "arrow 1",  desc = "Scroll down one line" },
+
+	{ on = "<C-u>", run = "arrow -50%", desc = "Scroll up half page" },
+	{ on = "<C-d>", run = "arrow 50%",  desc = "Scroll down half page" },
+
+	{ on = "b",          run = "arrow -100%", desc = "Scroll up one page" },
+	{ on = "<Space>",    run = "arrow 100%",  desc = "Scroll down one page" },
+	{ on = "<PageUp>",   run = "arrow -100%", desc = "Scroll up one page" },
+	{ on = "<PageDown>", run = "arrow 100%",  desc = "Scroll down one page" },
+
+	{ on = "g", run = "arrow top", desc = "Go to the top" },
+	{ on = "G", run = "arrow bot", desc = "Go to the bottom" },
 ]

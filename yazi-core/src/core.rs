@@ -3,7 +3,7 @@ use yazi_shared::Layer;
 use yazi_shim::ratatui::Padable;
 use yazi_tty::sequence::SetCursorStyle;
 
-use crate::{cmp::Cmp, confirm::Confirm, help::Help, input::{Input, InputGuard}, mgr::Mgr, notify::Notify, palette::Palette, pick::Pick, tab::Tab, tasks::Tasks, which::Which};
+use crate::{cmp::Cmp, confirm::Confirm, help::Help, input::{Input, InputGuard, InputHistories}, mgr::Mgr, notify::Notify, pager::Pager, palette::Palette, pick::Pick, tab::Tab, tasks::Tasks, which::Which};
 
 pub struct Core {
 	pub mgr:     Mgr,
@@ -13,6 +13,7 @@ pub struct Core {
 	pub confirm: Confirm,
 	pub help:    Help,
 	pub palette: Palette,
+	pub pager:   Pager,
 	pub cmp:     Cmp,
 	pub which:   Which,
 	pub notify:  Notify,
@@ -24,10 +25,11 @@ impl Core {
 			mgr:     Mgr::make(),
 			tasks:   Tasks::serve(),
 			pick:    Default::default(),
-			input:   Default::default(),
+			input:   Input { histories: InputHistories::load(), ..Default::default() },
 			confirm: Default::default(),
 			help:    Default::default(),
 			palette: Default::default(),
+			pager:   Default::default(),
 			cmp:     Default::default(),
 			which:   Default::default(),
 			notify:  Default::default(),
@@ -65,6 +67,8 @@ impl Core {
 			Layer::Help
 		} else if self.palette.visible {
 			Layer::Palette
+		} else if self.pager.visible {
+			Layer::Pager
 		} else if self.confirm.visible {
 			Layer::Confirm
 		} else if self.input.focus() {

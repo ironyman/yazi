@@ -17,9 +17,14 @@ function Entity:padding()
 		return " "
 	end
 
+	local open = th.indicator.padding.open
+	if open:match("^%s*$") then
+		return ui.Span(open):style(self:style())
+	end
+
 	local style = self:style_rev()
 	if style then
-		return ui.Span(th.indicator.padding.open):style(style)
+		return ui.Span(open):style(style)
 	else
 		return " "
 	end

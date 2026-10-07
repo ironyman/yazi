@@ -21,8 +21,8 @@ impl Widget for Entries<'_> {
 		// Label
 		let col1: Vec<_> = entries.iter().map(|e| ListItem::new(e.label())).collect();
 
-		// Setting value, or chord
-		let pref = &self.core.active().pref;
+		// Setting value, chord, or kind
+		let (pref, history) = (&self.core.active().pref, &self.core.palette.history);
 		let col2: Vec<_> = entries
 			.iter()
 			.map(|e| match e {
@@ -38,6 +38,19 @@ impl Widget for Entries<'_> {
 				}
 				Entry::Chord(c) => ListItem::new(Line::from(c.on()).alignment(Alignment::Right))
 					.style(THEME.palette.chord.get()),
+				Entry::Action(_) => ListItem::new(Line::from("action").alignment(Alignment::Right))
+					.style(THEME.palette.chord.get()),
+				Entry::Run(_) => ListItem::new(Line::from("run").alignment(Alignment::Right))
+					.style(THEME.palette.chord.get()),
+				Entry::File { dir, .. } => {
+					ListItem::new(Line::from(if *dir { "dir" } else { "" }).alignment(Alignment::Right))
+						.style(THEME.palette.chord.get())
+				}
+				Entry::Shell(cmd) => {
+					let kind = if history.contains(cmd) { "history" } else { "run" };
+					ListItem::new(Line::from(kind).alignment(Alignment::Right))
+						.style(THEME.palette.chord.get())
+				}
 			})
 			.collect();
 

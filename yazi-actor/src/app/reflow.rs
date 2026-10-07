@@ -18,6 +18,7 @@ impl Actor for Reflow {
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
 		let Some(size) = cx.term.as_ref().and_then(|t| t.size().ok()) else { succ!() };
+		yazi_plugin::runtime::reset()?;
 		let mut layout = LAYOUT.get();
 
 		let result = Lives::scope(cx.core, |_| {

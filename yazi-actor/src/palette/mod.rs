@@ -1,1 +1,1 @@
-yazi_macro::mod_flat!(arrow close cycle escape show);
+yazi_macro::mod_flat!(arrow close complete cycle escape show update_files);

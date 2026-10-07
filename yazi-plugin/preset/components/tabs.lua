@@ -18,7 +18,7 @@ function Tabs:redraw()
 
 	local style = self:style()
 	local lines = {
-		ui.Line(th.tabs.sep_outer.open):fg(style.inactive:bg()),
+		self:sep(th.tabs.sep_outer.open, style.inactive, ui.Style():fg(style.inactive:bg())),
 	}
 
 	local pos = lines[1]:width()
@@ -26,10 +26,11 @@ function Tabs:redraw()
 	for i = 1, #cx.tabs do
 		local name = ui.truncate(string.format(" %d %s ", i, cx.tabs[i].name), { max = max })
 		if i == cx.tabs.idx then
+			local cap = ui.Style():fg(style.active:bg()):bg(style.inactive:bg())
 			lines[#lines + 1] = ui.Line {
-				ui.Span(th.tabs.sep_inner.open):fg(style.active:bg()):bg(style.inactive:bg()),
+				self:sep(th.tabs.sep_inner.open, style.active, cap),
 				ui.Span(name):style(style.active),
-				ui.Span(th.tabs.sep_inner.close):fg(style.active:bg()):bg(style.inactive:bg()),
+				self:sep(th.tabs.sep_inner.close, style.active, cap),
 			}
 		else
 			lines[#lines + 1] = ui.Line(name):style(style.inactive)
@@ -37,9 +38,13 @@ function Tabs:redraw()
 		self._offsets[i], pos = pos, pos + lines[#lines]:width()
 	end
 
-	lines[#lines + 1] = ui.Line(th.tabs.sep_outer.close):fg(style.inactive:bg())
+	lines[#lines + 1] = self:sep(th.tabs.sep_outer.close, style.inactive, ui.Style():fg(style.inactive:bg()))
 	return ui.Line(lines):area(self._area)
 end
+
+-- A blank separator is filled with `fill`, so the shape stays rectangular;
+-- otherwise it's a glyph drawn in `cap` to round the edge.
+function Tabs:sep(s, fill, cap) return ui.Line(s):style(s:match("^%s*$") and fill or cap) end
 
 function Tabs.height() return #cx.tabs > 1 and 1 or 0 end
 

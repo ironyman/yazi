@@ -1,1 +1,1 @@
-yazi_macro::mod_flat!(entry palette setting);
+yazi_macro::mod_flat!(entry files fuzzy mode palette search setting);

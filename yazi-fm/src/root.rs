@@ -4,7 +4,7 @@ use yazi_core::Core;
 use yazi_macro::error;
 use yazi_plugin::LUA;
 
-use super::{cmp, confirm, help, input, mgr, palette, pick, spot, tasks, which};
+use super::{cmp, confirm, help, input, mgr, pager, palette, pick, spot, tasks, which};
 use crate::Renderer;
 
 pub(super) struct Root<'a> {
@@ -48,6 +48,10 @@ impl Widget for Root<'_> {
 
 		if self.core.confirm.visible {
 			confirm::Confirm::new(self.core).render(area, buf);
+		}
+
+		if self.core.pager.visible {
+			pager::Pager::new(self.core).render(area, buf);
 		}
 
 		if self.core.help.visible {

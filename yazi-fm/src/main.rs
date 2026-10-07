@@ -4,7 +4,7 @@ static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
 extern crate self as yazi_fm;
 
-yazi_macro::mod_pub!(app cmp confirm help input mgr notify palette pick spot tasks which);
+yazi_macro::mod_pub!(app cmp confirm help input mgr notify pager palette pick spot tasks which);
 
 yazi_macro::mod_flat!(dispatcher executor logs panic renderer root router signals);
 

@@ -41,9 +41,9 @@ function Status:mode()
 
 	local style = self:style()
 	return ui.Line {
-		ui.Span(th.status.sep_left.open):fg(style.main:bg()):bg(App.bg()),
+		self:sep(th.status.sep_left.open, style.main, ui.Style():fg(style.main:bg()):bg(App.bg())),
 		ui.Span(" " .. mode .. " "):style(style.main),
-		ui.Span(th.status.sep_left.close):fg(style.main:bg()):bg(style.alt:bg()),
+		self:sep(th.status.sep_left.close, style.main, ui.Style():fg(style.main:bg()):bg(style.alt:bg())),
 	}
 end
 
@@ -54,7 +54,7 @@ function Status:length()
 	local style = self:style()
 	return ui.Line {
 		ui.Span(" " .. ya.readable_size(len) .. " "):style(style.alt),
-		ui.Span(th.status.sep_left.close):fg(style.alt:bg()),
+		self:sep(th.status.sep_left.close, style.alt, ui.Style():fg(style.alt:bg())),
 	}
 end
 
@@ -114,7 +114,8 @@ function Status:percent()
 
 	local style = self:style()
 	return ui.Line {
-		ui.Span(" " .. th.status.sep_right.open):fg(style.alt:bg()),
+		" ",
+		self:sep(th.status.sep_right.open, style.alt, ui.Style():fg(style.alt:bg())),
 		ui.Span(percent):style(style.alt),
 	}
 end
@@ -125,11 +126,15 @@ function Status:position()
 
 	local style = self:style()
 	return ui.Line {
-		ui.Span(th.status.sep_right.open):fg(style.main:bg()):bg(style.alt:bg()),
+		self:sep(th.status.sep_right.open, style.main, ui.Style():fg(style.main:bg()):bg(style.alt:bg())),
 		ui.Span(string.format(" %2d/%-2d ", math.min(cursor + 1, length), length)):style(style.main),
-		ui.Span(th.status.sep_right.close):fg(style.main:bg()):bg(App.bg()),
+		self:sep(th.status.sep_right.close, style.main, ui.Style():fg(style.main:bg()):bg(App.bg())),
 	}
 end
+
+-- A blank separator is filled with `fill`, so the block stays rectangular;
+-- otherwise it's a glyph drawn in `cap` to round the edge.
+function Status:sep(s, fill, cap) return ui.Span(s):style(s:match("^%s*$") and fill or cap) end
 
 function Status:reflow() return { self } end
 

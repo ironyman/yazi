@@ -32,6 +32,7 @@ pub enum Layer {
 	Confirm,
 	Help,
 	Palette,
+	Pager,
 	Cmp,
 	Which,
 	Notify,

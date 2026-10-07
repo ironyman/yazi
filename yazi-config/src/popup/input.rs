@@ -7,7 +7,7 @@ use yazi_widgets::input::InputOpt;
 
 #[derive(Deserialize, DeserializeOver, DeserializeOver2)]
 pub struct Input {
-	pub cursor_blink: bool,
+	pub cursor_blink: SyncCell<bool>,
 	pub vim_mode:     SyncCell<bool>,
 
 	// cd
@@ -100,7 +100,7 @@ impl Input {
 		InputOpt {
 			name: "shell".to_owned(),
 			title: self.shell_title[block as usize].clone(),
-			history: "shared".to_owned(),
+			history: "shell".to_owned(),
 			position: Position::new(self.shell_origin, self.shell_offset),
 			..Default::default()
 		}

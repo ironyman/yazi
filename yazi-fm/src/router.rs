@@ -40,6 +40,7 @@ impl<'a> Router<'a> {
 				self.matches(layer, layer, key)
 			}
 			L::Help => self.matches(L::Help, L::Help, key) || self.matches(L::Input, L::Help, key),
+			L::Pager => self.matches(L::Pager, L::Pager, key),
 			L::Palette => {
 				self.matches(L::Palette, L::Palette, key) || self.matches(L::Input, L::Palette, key)
 			}

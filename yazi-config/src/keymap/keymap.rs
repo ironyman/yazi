@@ -19,6 +19,7 @@ pub struct Keymap {
 	confirm: KeymapSection,
 	help:    KeymapSection,
 	palette: KeymapSection,
+	pager:   KeymapSection,
 	cmp:     KeymapSection,
 }
 
@@ -43,6 +44,7 @@ impl Keymap {
 			L::Confirm => &self.confirm,
 			L::Help => &self.help,
 			L::Palette => &self.palette,
+			L::Pager => &self.pager,
 			L::Cmp => &self.cmp,
 			L::Which => None?,
 			L::Notify => None?,

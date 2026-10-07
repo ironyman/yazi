@@ -65,8 +65,8 @@ active   = { bg = "blue", bold = true }
 inactive = { fg = "blue", bg = "gray" }
 
 # Separator
-sep_inner = { open = "", close = "" }
-sep_outer = { open = "", close = "" }
+sep_inner = { open = " ", close = " " }
+sep_outer = { open = " ", close = " " }
 
 # : }}}
 
@@ -94,7 +94,7 @@ unset_alt  = { fg = "red", bg = "gray" }
 parent  = { reversed = true }
 current = { reversed = true }
 preview = { underline = true }
-padding = { open = "", close = "" }
+padding = { open = " ", close = " " }
 
 # : }}}
 
@@ -103,8 +103,8 @@ padding = { open = "", close = "" }
 
 [status]
 overall   = {}
-sep_left  = { open = "", close = "" }
-sep_right = { open = "", close = "" }
+sep_left  = { open = " ", close = " " }
+sep_right = { open = " ", close = " " }
 
 # Permissions
 perm_sep   = { fg = "darkgray" }
@@ -242,6 +242,15 @@ border  = { fg = "blue" }
 chord   = { fg = "cyan" }
 setting = { fg = "yellow" }
 hovered = { reversed = true, bold = true }
+
+# : }}}
+
+
+# : Pager {{{
+
+[pager]
+border = { fg = "blue" }
+title  = { fg = "blue", bold = true }
 
 # : }}}
 

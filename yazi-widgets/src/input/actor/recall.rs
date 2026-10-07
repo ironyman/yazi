@@ -17,19 +17,19 @@ impl Input {
 			succ!();
 		} else if next == items.len() {
 			let draft = self.history.take();
-			return self.recall_to(draft);
+			return self.set_value(draft);
 		} else if self.history.at.is_none() {
 			self.history.draft = self.value().to_owned();
 		}
 
 		self.history.at = Some(next);
-		self.recall_to(items[next].clone())
+		self.set_value(items[next].clone())
 	}
 
-	fn recall_to(&mut self, value: String) -> Result<Data> {
+	pub fn set_value(&mut self, value: impl Into<String>) -> Result<Data> {
 		let mode = self.mode();
 
-		let mut snap = InputSnap::new(value, self.obscure);
+		let mut snap = InputSnap::new(value.into(), self.obscure);
 		snap.mode = mode;
 		snap.resize(self.size.width as usize);
 

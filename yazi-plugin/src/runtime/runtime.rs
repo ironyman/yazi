@@ -7,6 +7,8 @@ use yazi_shared::{path::PathBufDyn, url::UrlBuf};
 use yazi_shim::mlua::SER_OPT;
 use yazi_tty::TTY;
 
+use crate::LUA;
+
 pub(crate) fn compose() -> Composer<ComposerGet, ComposerSet> {
 	fn get(lua: &Lua, key: &[u8]) -> mlua::Result<Value> {
 		match key {
@@ -32,6 +34,9 @@ pub(crate) fn compose() -> Composer<ComposerGet, ComposerSet> {
 
 	Composer::new(get, set)
 }
+
+/// Drops values cached from `YAZI`, so `rt` reflects settings changed at runtime.
+pub fn reset() -> mlua::Result<()> { LUA.globals().raw_set("rt", compose()) }
 
 fn path() -> Composer<ComposerGet, ComposerSet> {
 	fn get(lua: &Lua, key: &[u8]) -> mlua::Result<Value> {

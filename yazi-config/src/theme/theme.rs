@@ -6,7 +6,7 @@ use serde::{Deserialize, Deserializer, de};
 use yazi_binding::style::Style;
 use yazi_codegen::{DeserializeOver, DeserializeOver1, DeserializeOver2, Overlay};
 use yazi_fs::{Xdg, ok_or_not_found, path::sanitize_path};
-use yazi_shim::{arc_swap::IntoPointee, cell::SyncCell};
+use yazi_shim::{arc_swap::IntoPointee, cell::SyncCell, toml::DeserializeOver};
 
 use super::{Custom, Filetype, Flavor, Icon};
 use crate::YAZI;
@@ -30,6 +30,7 @@ pub struct Theme {
 	pub tasks:     Tasks,
 	pub help:      Help,
 	pub palette:   Palette,
+	pub pager:     Pager,
 
 	// File-specific styles
 	pub filetype: Filetype,
@@ -45,6 +46,14 @@ impl Theme {
 		let p = Xdg::config_dir().join("theme.toml");
 		ok_or_not_found(std::fs::read_to_string(&p))
 			.with_context(|| format!("Failed to read theme {p:?}"))
+	}
+
+	/// Sets `key` under `[table]` in the user's `theme.toml`, validated against the preset.
+	pub async fn persist(table: &str, key: &str, value: impl Into<toml_edit::Value>) -> Result<()> {
+		crate::persist("theme.toml", table, key, value, |s| {
+			Ok(_ = crate::Preset::theme(false)?.deserialize_over(s)?)
+		})
+		.await
 	}
 
 	// FIXME: remove
@@ -238,7 +247,7 @@ impl From<&Input> for yazi_widgets::input::InputStyles {
 		Self {
 			normal:   Some(input.value.get().into()),
 			selected: Some(input.selected.get().into()),
-			blink:    Some(YAZI.input.cursor_blink),
+			blink:    Some(YAZI.input.cursor_blink.get()),
 		}
 	}
 }
@@ -279,6 +288,13 @@ pub struct Palette {
 	pub chord:   SyncCell<Style>,
 	pub setting: SyncCell<Style>,
 	pub hovered: SyncCell<Style>,
+}
+
+// --- Pager
+#[derive(Deserialize, DeserializeOver, DeserializeOver2, Overlay)]
+pub struct Pager {
+	pub border: SyncCell<Style>,
+	pub title:  SyncCell<Style>,
 }
 
 fn deserialize_syntect_theme<'de, D>(deserializer: D) -> Result<ArcSwap<PathBuf>, D::Error>
