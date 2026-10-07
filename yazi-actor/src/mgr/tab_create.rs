@@ -1,6 +1,6 @@
 use anyhow::Result;
 use yazi_core::{mgr::CdSource, tab::Tab};
-use yazi_macro::{render, succ};
+use yazi_macro::{emit, relay, render, succ};
 use yazi_parser::mgr::TabCreateForm;
 use yazi_scheduler::NotifyProxy;
 use yazi_shared::{data::Data, url::UrlLike};
@@ -24,7 +24,14 @@ impl Actor for TabCreate {
 			));
 		}
 
+		// Seed with the current folders, so they keep their scroll position in the new tab
 		let mut tab = Tab::default();
+		for folder in [Some(cx.current()), cx.parent()].into_iter().flatten() {
+			let mut folder = folder.clone();
+			folder.entries.set_filter(None);
+			tab.history.insert(folder);
+		}
+
 		let (cd, url) = if let Some(target) = form.target {
 			(true, target)
 		} else if let Some(h) = cx.hovered() {
@@ -55,6 +62,9 @@ impl Actor for TabCreate {
 		act!(mgr:refresh, cx)?;
 		act!(mgr:peek, cx, true)?;
 		act!(app:title, cx).ok();
+
+		// The tab bar may have appeared, which changes the layout
+		emit!(Call(relay!(app:resize)));
 		succ!(render!());
 	}
 }

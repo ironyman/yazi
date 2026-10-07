@@ -11,6 +11,9 @@ end
 function Rail:reflow() return { self } end
 
 function Rail:redraw()
+	if not rt.mgr.show_borders then
+		return {}
+	end
 	return {
 		ui.Bar(ui.Edge.LEFT):area(self._area):symbol(th.mgr.border_symbol):style(th.mgr.border_style),
 	}

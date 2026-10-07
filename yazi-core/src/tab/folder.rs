@@ -10,6 +10,7 @@ use yazi_widgets::{Scrollable, Step};
 
 use crate::MgrProxy;
 
+#[derive(Clone)]
 pub struct Folder {
 	pub file:    File,
 	pub entries: Entries,

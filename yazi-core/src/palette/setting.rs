@@ -381,6 +381,8 @@ static GLOBALS: &[Global] = &[
 		},
 	},
 	live_bool!(mgr.show_symlink, "Show symlink targets"),
+	live_bool!(mgr.show_icons, "Show file icons"),
+	live_bool!(mgr.show_borders, "Show column borders"),
 	mouse_event!(CLICK, "click"),
 	mouse_event!(SCROLL, "scroll"),
 	mouse_event!(TOUCH, "touch"),

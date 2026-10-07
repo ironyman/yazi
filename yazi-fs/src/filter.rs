@@ -6,6 +6,7 @@ use yazi_shared::{event::Action, strand::AsStrand};
 
 use super::Normalizer;
 
+#[derive(Clone)]
 pub struct Filter {
 	raw:   String,
 	regex: Regex,

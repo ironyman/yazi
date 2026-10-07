@@ -6,7 +6,7 @@ use yazi_shared::{id::Id, path::{PathBufDyn, PathDyn, PathLike}};
 use super::{FilesSorter, Filter};
 use crate::{SortBy, file::File, op::FILES_TICKET};
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Entries {
 	hidden:       Vec<File>,
 	items:        Vec<File>,

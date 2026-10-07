@@ -18,7 +18,7 @@ function Tabs:redraw()
 
 	local style = self:style()
 	local lines = {
-		self:sep(th.tabs.sep_outer.open, style.inactive, ui.Style():fg(style.inactive:bg())),
+		self:edge(th.tabs.sep_outer.open, style.inactive),
 	}
 
 	local pos = lines[1]:width()
@@ -38,13 +38,22 @@ function Tabs:redraw()
 		self._offsets[i], pos = pos, pos + lines[#lines]:width()
 	end
 
-	lines[#lines + 1] = self:sep(th.tabs.sep_outer.close, style.inactive, ui.Style():fg(style.inactive:bg()))
+	lines[#lines + 1] = self:edge(th.tabs.sep_outer.close, style.inactive)
 	return ui.Line(lines):area(self._area)
 end
 
 -- A blank separator is filled with `fill`, so the shape stays rectangular;
 -- otherwise it's a glyph drawn in `cap` to round the edge.
 function Tabs:sep(s, fill, cap) return ui.Line(s):style(s:match("^%s*$") and fill or cap) end
+
+-- An outer separator caps the ends of the bar; a blank one draws nothing,
+-- so the bar ends flush with the outermost tabs.
+function Tabs:edge(s, inactive)
+	if s:match("^%s*$") then
+		return ui.Line("")
+	end
+	return ui.Line(s):style(ui.Style():fg(inactive:bg()))
+end
 
 function Tabs.height() return #cx.tabs > 1 and 1 or 0 end
 

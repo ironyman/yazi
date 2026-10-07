@@ -7,7 +7,7 @@ use yazi_shared::{NonEmptyString, url::UrlLike};
 use yazi_shim::toml::DeserializeOverHook;
 
 use super::{IconCond, IconConds, IconGlob, IconGlobs, IconNames, deserialize_icon_names};
-use crate::{Icon as I, mix};
+use crate::{Icon as I, YAZI, mix};
 
 #[derive(Default, Deserialize, DeserializeOver2, Overlay)]
 pub struct Icon {
@@ -44,7 +44,9 @@ pub struct Icon {
 
 impl Icon {
 	pub fn matches(&self, file: &File, hovered: bool) -> Option<I> {
-		if let Some(i) = self.globs.matches(file) {
+		if !YAZI.mgr.show_icons.get() {
+			return None;
+		} else if let Some(i) = self.globs.matches(file) {
 			return Some(i);
 		}
 

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use yazi_macro::{render, succ};
+use yazi_macro::{emit, relay, render, succ};
 use yazi_parser::mgr::TabCloseForm;
 use yazi_shared::data::Data;
 
@@ -32,6 +32,8 @@ impl Actor for TabClose {
 		act!(mgr:peek, cx, true)?;
 		act!(app:title, cx).ok();
 
+		// The tab bar may have disappeared, which changes the layout
+		emit!(Call(relay!(app:resize)));
 		succ!(render!());
 	}
 }
