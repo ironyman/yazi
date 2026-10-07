@@ -65,6 +65,7 @@ keymap = [
 	{ on = "O",         run = "open --interactive",          desc = "Open selected files interactively" },
 	{ on = "<Enter>",   run = "open",                        desc = "Open selected files" },
 	{ on = "<S-Enter>", run = "open --interactive",          desc = "Open selected files interactively" },
+	{ on = "e",         run = "plugin edit",                 desc = "Edit selected files in $EDITOR" },
 	{ on = "y",         run = "yank",                        desc = "Yank selected files (copy)" },
 	{ on = "x",         run = "yank --cut",                  desc = "Yank selected files (cut)" },
 	{ on = "p",         run = "paste",                       desc = "Paste yanked files" },
@@ -88,13 +89,19 @@ keymap = [
 	{ on = "z",         run = "plugin fzf",                  desc = "Jump to a file/directory via fzf" },
 	{ on = "Z",         run = "plugin zoxide",               desc = "Jump to a directory via zoxide" },
 
+	# Bookmarks
+	{ on = "m",          run = "plugin bookmarks save",       desc = "Save current position as a bookmark" },
+	{ on = "'",          run = "plugin bookmarks jump",       desc = "Jump to a bookmark" },
+	{ on = [ "b", "d" ], run = "plugin bookmarks delete",     desc = "Delete a bookmark" },
+	{ on = [ "b", "D" ], run = "plugin bookmarks delete_all", desc = "Delete all bookmarks" },
+
 	# Linemode
-	{ on = [ "m", "s" ], run = "linemode size",        desc = "Linemode: size" },
-	{ on = [ "m", "p" ], run = "linemode permissions", desc = "Linemode: permissions" },
-	{ on = [ "m", "b" ], run = "linemode btime",       desc = "Linemode: btime" },
-	{ on = [ "m", "m" ], run = "linemode mtime",       desc = "Linemode: mtime" },
-	{ on = [ "m", "o" ], run = "linemode owner",       desc = "Linemode: owner" },
-	{ on = [ "m", "n" ], run = "linemode none",        desc = "Linemode: none" },
+	{ on = [ "M", "s" ], run = "linemode size",        desc = "Linemode: size" },
+	{ on = [ "M", "p" ], run = "linemode permissions", desc = "Linemode: permissions" },
+	{ on = [ "M", "b" ], run = "linemode btime",       desc = "Linemode: btime" },
+	{ on = [ "M", "m" ], run = "linemode mtime",       desc = "Linemode: mtime" },
+	{ on = [ "M", "o" ], run = "linemode owner",       desc = "Linemode: owner" },
+	{ on = [ "M", "n" ], run = "linemode none",        desc = "Linemode: none" },
 
 	# Copy
 	{ on = [ "c", "c" ], run = "copy path",             desc = "Copy file path" },

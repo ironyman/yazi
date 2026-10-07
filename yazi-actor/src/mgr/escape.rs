@@ -16,6 +16,11 @@ impl Actor for Escape {
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
 		if form.is_empty() {
+			if !cx.notify.messages.is_empty() {
+				cx.notify.messages.clear();
+				render!();
+			}
+
 			_ = act!(mgr:escape_find, cx)? != false
 				|| act!(mgr:escape_visual, cx)? != false
 				|| act!(mgr:escape_filter, cx)? != false
