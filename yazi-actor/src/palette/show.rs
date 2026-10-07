@@ -24,6 +24,7 @@ impl Actor for Show {
 
 		let cwd = cx.cwd().as_local().map(PathBuf::from);
 		let history = cx.input.histories.get("shell").to_vec();
+		let recents = cx.mgr.recents.iter().cloned().collect();
 
 		let palette = &mut cx.palette;
 		palette.close();
@@ -32,6 +33,7 @@ impl Actor for Show {
 		palette.position = position;
 		palette.height = area.height;
 		palette.history = history;
+		palette.recents = recents;
 		palette.cwd = cwd;
 
 		palette.input = Input::default();

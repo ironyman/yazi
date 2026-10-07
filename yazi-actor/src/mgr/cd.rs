@@ -4,7 +4,7 @@ use anyhow::Result;
 use tokio::pin;
 use tokio_stream::{StreamExt, wrappers::UnboundedReceiverStream};
 use yazi_config::YAZI;
-use yazi_core::mgr::CdSource;
+use yazi_core::mgr::{CdSource, ThisPc};
 use yazi_dds::Pubsub;
 use yazi_fs::{op::FilesOp, path::{clean_url, expand_url}};
 use yazi_macro::{log_if_err, render, succ};
@@ -46,7 +46,7 @@ impl Actor for Cd {
 		tab.history.insert(rep);
 
 		// Parent
-		if let Some(parent) = form.target.parent() {
+		if let Some(parent) = ThisPc::parent(&form.target) {
 			tab.parent = Some(tab.history.remove_or(parent));
 		}
 

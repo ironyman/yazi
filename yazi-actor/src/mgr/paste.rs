@@ -13,6 +13,8 @@ impl Actor for Paste {
 	const NAME: &str = "paste";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		let mgr = &mut cx.core.mgr;
 		let tab = &mgr.tabs[cx.tab];
 

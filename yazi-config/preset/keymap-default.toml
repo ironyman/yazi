@@ -144,6 +144,7 @@ keymap = [
 	{ on = [ "g", "d" ],       run = "cd ~/Downloads",   desc = "Go to ~/Downloads" },
 	{ on = [ "g", "t" ],       run = "plugin trash",     desc = "Go to trash bin" },
 	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
+	{ on = [ "g", "r" ],       run = "palette recents",  desc = "Go to a recent place" },
 	{ on = [ "g", "f" ],       run = "follow",           desc = "Follow hovered symlink" },
 
 	# Tabs

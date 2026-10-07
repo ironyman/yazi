@@ -13,6 +13,8 @@ impl Actor for Link {
 	const NAME: &str = "link";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		let mgr = &mut cx.core.mgr;
 		let tab = &mgr.tabs[cx.tab];
 

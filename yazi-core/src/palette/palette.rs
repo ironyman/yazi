@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf, is_separator}, sync::mpsc};
+use std::{cmp::Reverse, path::{Path, PathBuf, is_separator}, sync::mpsc};
 
 use anyhow::Result;
 use ratatui_widgets::block::Padding;
@@ -10,7 +10,8 @@ use yazi_term::event::KeyEvent;
 use yazi_tty::sequence::SetCursorStyle;
 use yazi_widgets::{Scrollable, input::Input};
 
-use super::{Entry, PaletteFiles, PaletteMode, Search};
+use super::{Entry, PaletteFiles, PaletteMode, Search, fuzzy};
+use crate::mgr::Recent;
 
 #[derive(Default)]
 pub struct Palette {
@@ -22,6 +23,7 @@ pub struct Palette {
 	// Sources
 	pub matched:  Vec<Entry>,
 	pub history:  Vec<String>,
+	pub recents:  Vec<Recent>,
 	pub cwd:      Option<PathBuf>,
 	pub scope:    Option<(PathBuf, String)>,
 	pub scanning: bool,
@@ -135,6 +137,7 @@ impl Palette {
 			(PaletteMode::Command, q) => Entry::commands(q.trim()),
 			(PaletteMode::File, _) => self.matched.clone(),
 			(PaletteMode::Shell, q) => Self::shell(q.trim(), &self.history),
+			(PaletteMode::Recents, q) => Self::recents(q.trim(), &self.recents),
 		}
 	}
 
@@ -143,6 +146,15 @@ impl Palette {
 		let recent = history.iter().rev().filter(|&h| h != cmd && h.contains(cmd));
 
 		typed.into_iter().map(Into::into).chain(recent.cloned()).map(Entry::Shell).collect()
+	}
+
+	/// Recent places fuzzy-matching `q`, best first, keeping the most recent first among equals.
+	fn recents(q: &str, recents: &[Recent]) -> Vec<Entry> {
+		let mut scored: Vec<_> =
+			recents.iter().filter_map(|r| Some((fuzzy(&r.url.to_string(), q)?, r))).collect();
+
+		scored.sort_by_key(|&(score, _)| Reverse(score));
+		scored.into_iter().map(|(_, r)| Entry::Recent(r.clone())).collect()
 	}
 }
 
@@ -155,6 +167,7 @@ impl Palette {
 			PaletteMode::File if self.scanning => "Go to File (scanning...)",
 			PaletteMode::File => "Go to File",
 			PaletteMode::Shell => "Shell",
+			PaletteMode::Recents => "Recent Places",
 		}
 	}
 

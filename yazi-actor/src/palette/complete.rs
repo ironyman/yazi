@@ -25,6 +25,7 @@ impl Actor for Complete {
 			Some(Entry::Action(a)) => format!("{a} "),
 			Some(Entry::File { label, dir: true, .. }) => format!("{label}{MAIN_SEPARATOR}"),
 			Some(Entry::File { label, .. } | Entry::Shell(label) | Entry::Run(label)) => label.clone(),
+			Some(Entry::Recent(r)) => r.url.to_string(),
 		};
 
 		let value = format!("{}{value}", palette.prefix());

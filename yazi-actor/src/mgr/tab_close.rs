@@ -18,6 +18,9 @@ impl Actor for TabClose {
 			succ!();
 		}
 
+		let mgr = &mut cx.core.mgr;
+		mgr.recents.depart(&mut mgr.tabs[form.idx]);
+
 		let tabs = cx.tabs_mut();
 		tabs.remove(form.idx).shutdown();
 

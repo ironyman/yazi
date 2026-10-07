@@ -157,6 +157,20 @@ impl Folder {
 		b
 	}
 
+	/// Hovers the entry for `cwd`, a child of this folder, or else an entry linking to it,
+	/// such as a drive in This PC.
+	pub fn track(&mut self, cwd: &Folder) -> bool {
+		if self.entries.position(cwd.key()).is_none()
+			&& let Some(f) =
+				self.entries.iter().find(|f| f.extra.link_to().is_some_and(|to| *to == cwd.loc()))
+		{
+			let key = f.key().to_owned();
+			return self.hover(key.dyn_path());
+		}
+
+		self.hover(cwd.key())
+	}
+
 	pub fn repos(&mut self, key: Option<PathDyn>) -> bool {
 		if let Some(k) = key {
 			self.hover(k)

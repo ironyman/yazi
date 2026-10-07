@@ -1,5 +1,5 @@
 use anyhow::Result;
-use yazi_core::mgr::CdSource;
+use yazi_core::mgr::{CdSource, ThisPc};
 use yazi_macro::succ;
 use yazi_parser::VoidForm;
 use yazi_shared::{data::Data, url::UrlLike};
@@ -14,8 +14,11 @@ impl Actor for Leave {
 	const NAME: &str = "leave";
 
 	fn act(cx: &mut Ctx, _: Self::Form) -> Result<Data> {
-		let url =
-			cx.hovered().and_then(|h| h.parent()).filter(|u| u != cx.cwd()).or_else(|| cx.cwd().parent());
+		let url = cx
+			.hovered()
+			.and_then(|h| h.parent())
+			.filter(|u| u != cx.cwd())
+			.or_else(|| ThisPc::parent(cx.cwd()));
 
 		let Some(url) = url else { succ!() };
 		let url = url.physical().to_owned();

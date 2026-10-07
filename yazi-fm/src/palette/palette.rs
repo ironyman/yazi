@@ -64,6 +64,7 @@ impl Palette<'_> {
 			PaletteMode::Command => ("run", "complete/cycle", "! shell"),
 			PaletteMode::File => ("open", "complete", "> commands  ! shell"),
 			PaletteMode::Shell => ("run", "complete", ""),
+			PaletteMode::Recents => ("go", "complete", "> commands  ! shell"),
 		};
 
 		let hints = [

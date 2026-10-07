@@ -18,7 +18,7 @@ impl Actor for Hover {
 
 		// Parent should always track CWD
 		if let Some(p) = &mut tab.parent {
-			render!(p.repos(Some(tab.current.key())));
+			render!(p.track(&tab.current));
 		}
 
 		// Repos CWD

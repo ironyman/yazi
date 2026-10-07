@@ -7,4 +7,5 @@ pub enum PaletteMode {
 	Command,
 	File,
 	Shell,
+	Recents,
 }

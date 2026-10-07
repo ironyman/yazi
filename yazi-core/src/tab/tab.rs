@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, time::Instant};
 
 use ratatui_core::layout::Rect;
 use yazi_binding::position::{Origin, Position};
@@ -24,6 +24,9 @@ pub struct Tab {
 	pub spot:    Spot,
 	pub preview: Preview,
 	pub finder:  Option<Finder>,
+
+	/// When the stay in the cwd began, or `None` once it has counted as recent.
+	pub arrived: Option<Instant>,
 }
 
 impl Default for Tab {
@@ -44,6 +47,8 @@ impl Default for Tab {
 			spot:    Default::default(),
 			preview: Default::default(),
 			finder:  Default::default(),
+
+			arrived: Some(Instant::now()),
 		}
 	}
 }

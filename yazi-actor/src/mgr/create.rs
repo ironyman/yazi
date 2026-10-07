@@ -21,6 +21,8 @@ impl Actor for Create {
 	const NAME: &str = "create";
 
 	fn act(cx: &mut Ctx, CreateForm { target, dir, force }: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		let cwd = cx.cwd().to_owned();
 
 		let mut target: Pin<Box<dyn Stream<Item = StrandBuf> + Send>> = if target.is_empty() {

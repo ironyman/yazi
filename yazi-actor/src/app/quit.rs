@@ -20,6 +20,9 @@ impl Actor for Quit {
 	const NAME: &str = "quit";
 
 	fn act(cx: &mut Ctx, Self::Form { opt }: Self::Form) -> Result<Data> {
+		let mgr = &mut cx.core.mgr;
+		let recents = mgr.recents.conclude(&mut mgr.tabs);
+
 		cx.tasks.shutdown();
 		cx.mgr.shutdown();
 		yazi_plugin::shutdown();
@@ -32,6 +35,7 @@ impl Actor for Quit {
 				Self::cwd_to_file(&cwd, opt.no_cwd_file),
 				Self::selected_to_file(opt.selected),
 				Self::wait_probe(),
+				recents,
 			);
 
 			Raterm::stop();

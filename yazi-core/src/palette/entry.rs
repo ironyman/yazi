@@ -5,6 +5,7 @@ use yazi_config::{KEYMAP, keymap::ChordArc};
 use yazi_shared::{Layer, url::UrlBuf};
 
 use super::Setting;
+use crate::mgr::Recent;
 
 #[derive(Clone, Debug)]
 pub enum Entry {
@@ -14,6 +15,7 @@ pub enum Entry {
 	Run(String),
 	File { url: UrlBuf, label: String, dir: bool },
 	Shell(String),
+	Recent(Recent),
 }
 
 /// Every user-facing `mgr` action, so those without a key binding can be run too.
@@ -100,6 +102,7 @@ impl Entry {
 			Self::Action(a) => (*a).into(),
 			Self::Run(cmd) | Self::Shell(cmd) => cmd.into(),
 			Self::File { label, .. } => label.into(),
+			Self::Recent(r) => r.url.to_string().into(),
 		}
 	}
 }

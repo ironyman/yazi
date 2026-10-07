@@ -14,6 +14,8 @@ impl Actor for Yank {
 	const NAME: &str = "yank";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		act!(mgr:escape_visual, cx)?;
 
 		cx.mgr.yanked =

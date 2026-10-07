@@ -19,6 +19,8 @@ impl Actor for Open {
 	const NAME: &str = "open";
 
 	fn act(cx: &mut Ctx, Self::Form { mut opt }: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		if !opt.interactive && ARGS.chooser_file.is_some() {
 			succ!(if !opt.targets.is_empty() {
 				Quit::with_selected(opt.targets)

@@ -54,6 +54,7 @@ impl Default for Loader {
 			("mime.trash".to_owned(), preset!("plugins/mime-trash").into()),
 			("multi".to_owned(), preset!("plugins/multi").into()),
 			("noop".to_owned(), preset!("plugins/noop").into()),
+			("pc".to_owned(), preset!("plugins/pc").into()),
 			("pdf".to_owned(), preset!("plugins/pdf").into()),
 			("rg".to_owned(), preset!("plugins/rg").into()),
 			("search".to_owned(), preset!("plugins/search").into()),

@@ -33,6 +33,7 @@ impl Actor for Close {
 			Some(Entry::Run(cmd)) => return Self::run(cx, &cmd),
 			Some(Entry::File { url, dir: true, .. }) => succ!(MgrProxy::cd(url, CdSource::Cd)),
 			Some(Entry::File { url, dir: false, .. }) => succ!(MgrProxy::reveal(url)),
+			Some(Entry::Recent(r)) => succ!(MgrProxy::cd(r.url, CdSource::Cd)),
 			Some(Entry::Shell(cmd)) if form.pager => {
 				cx.input.histories.remember("shell", &cmd);
 				succ!(Self::page(cx, cmd))

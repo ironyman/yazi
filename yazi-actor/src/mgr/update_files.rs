@@ -83,7 +83,7 @@ impl UpdateFiles {
 
 		if let Some(f) = tab.parent.as_mut() {
 			render!(f.update_pub(tab.id, op));
-			render!(f.hover(key));
+			render!(f.track(&tab.current));
 		}
 
 		if leave {

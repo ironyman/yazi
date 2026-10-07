@@ -17,6 +17,9 @@ impl Actor for Stash {
 			cx.tab_mut().backstack.push(form.target.as_url());
 		}
 
+		let mgr = &mut cx.core.mgr;
+		mgr.recents.depart(&mut mgr.tabs[cx.tab]);
+
 		succ!()
 	}
 

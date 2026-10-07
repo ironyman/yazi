@@ -1,3 +1,5 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use ratatui_core::{buffer::Buffer, layout::{self, Alignment, Constraint, Rect}, text::Line, widgets::Widget};
 use ratatui_widgets::list::{List, ListItem};
 use yazi_config::THEME;
@@ -9,6 +11,19 @@ pub(super) struct Entries<'a> {
 
 impl<'a> Entries<'a> {
 	pub(super) fn new(core: &'a Core) -> Self { Self { core } }
+}
+
+impl Entries<'_> {
+	/// How long ago `at`, in seconds since the Unix epoch, was, e.g. `5m` or `3d`.
+	fn ago(at: u64) -> String {
+		let now = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |d| d.as_secs());
+		match now.saturating_sub(at) {
+			s @ ..60 => format!("{s}s"),
+			s @ ..3600 => format!("{}m", s / 60),
+			s @ ..86400 => format!("{}h", s / 3600),
+			s => format!("{}d", s / 86400),
+		}
+	}
 }
 
 impl Widget for Entries<'_> {
@@ -49,6 +64,11 @@ impl Widget for Entries<'_> {
 				Entry::Shell(cmd) => {
 					let kind = if history.contains(cmd) { "history" } else { "run" };
 					ListItem::new(Line::from(kind).alignment(Alignment::Right))
+						.style(THEME.palette.chord.get())
+				}
+				Entry::Recent(r) => {
+					let text = format!("{}× · {}", r.count, Self::ago(r.at));
+					ListItem::new(Line::from(text).alignment(Alignment::Right))
 						.style(THEME.palette.chord.get())
 				}
 			})

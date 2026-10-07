@@ -21,6 +21,8 @@ impl Actor for Shell {
 	const NAME: &str = "shell";
 
 	fn act(cx: &mut Ctx, mut form: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		act!(mgr:escape_visual, cx)?;
 
 		let cwd = form.cwd.take().unwrap_or_else(|| cx.cwd().clone());

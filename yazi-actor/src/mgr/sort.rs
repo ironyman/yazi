@@ -1,6 +1,6 @@
 use anyhow::Result;
-use yazi_core::tab::Folder;
-use yazi_fs::FilesSorter;
+use yazi_core::{mgr::ThisPc, tab::Folder};
+use yazi_fs::{FilesSorter, SortBy};
 use yazi_macro::{render, render_and, succ};
 use yazi_parser::{mgr::SortForm, spark::SparkKind};
 use yazi_shared::{Source, data::Data};
@@ -16,6 +16,8 @@ impl Actor for Sort {
 	const NAME: &str = "sort";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		let pref = &mut cx.tab_mut().pref;
 		pref.sort_by = form.by.unwrap_or(pref.sort_by);
 		pref.sort_reverse = form.reverse.unwrap_or(pref.sort_reverse);
@@ -30,6 +32,9 @@ impl Actor for Sort {
 			if f.stage.is_loading() {
 				render!();
 				false
+			} else if f.url == *ThisPc::url() {
+				f.entries.set_sorter(FilesSorter { by: SortBy::None, ..sorter });
+				render_and!(f.entries.catchup_revision())
 			} else {
 				f.entries.set_sorter(sorter);
 				render_and!(f.entries.catchup_revision())

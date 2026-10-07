@@ -132,5 +132,16 @@ impl<'a> Ctx<'a> {
 		self.tab_mut().hovered_folder_mut()
 	}
 
+	/// Counts the cwd as a recent place, if the user is working in it rather than another action
+	/// doing so on its own, e.g. `cd` sorting the new cwd.
+	pub(crate) fn mark_recent(&mut self) {
+		if self.source() == Source::Ind {
+			return;
+		}
+
+		let mgr = &mut self.core.mgr;
+		mgr.recents.mark(&mut mgr.tabs[self.tab]);
+	}
+
 	pub(crate) fn source(&self) -> Source { if self.level == 1 { self.source } else { Source::Ind } }
 }

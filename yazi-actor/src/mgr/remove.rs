@@ -16,6 +16,8 @@ impl Actor for Remove {
 	const NAME: &str = "remove";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		act!(mgr:escape_visual, cx)?;
 
 		let targets = Files(if form.hovered {

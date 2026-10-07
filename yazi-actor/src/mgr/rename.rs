@@ -20,6 +20,8 @@ impl Actor for Rename {
 	const NAME: &str = "rename";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		act!(mgr:escape_visual, cx)?;
 
 		if !form.hovered && !cx.tab().selected.is_empty() {

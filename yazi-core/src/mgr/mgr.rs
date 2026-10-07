@@ -4,12 +4,13 @@ use yazi_shared::url::UrlBuf;
 use yazi_term::TERM;
 use yazi_watcher::Watcher;
 
-use super::{Batcher, Mimetype, Tabs, Yanked};
+use super::{Batcher, Mimetype, Recents, Tabs, Yanked};
 use crate::tab::Tab;
 
 pub struct Mgr {
-	pub tabs:   Tabs,
-	pub yanked: Yanked,
+	pub tabs:    Tabs,
+	pub yanked:  Yanked,
+	pub recents: Recents,
 
 	pub batcher:  Batcher,
 	pub watcher:  Watcher,
@@ -19,8 +20,9 @@ pub struct Mgr {
 impl Mgr {
 	pub(crate) fn make() -> Self {
 		Self {
-			tabs:   Default::default(),
-			yanked: Default::default(),
+			tabs:    Default::default(),
+			yanked:  Default::default(),
+			recents: Recents::load(),
 
 			batcher:  Default::default(),
 			watcher:  Watcher::serve(),

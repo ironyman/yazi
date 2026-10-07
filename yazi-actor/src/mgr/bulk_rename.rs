@@ -28,6 +28,8 @@ impl Actor for BulkRename {
 	const NAME: &str = "bulk_rename";
 
 	fn act(cx: &mut Ctx, _: Self::Form) -> Result<Data> {
+		cx.mark_recent();
+
 		let Some(opener) = Self::opener() else {
 			succ!(NotifyProxy::push_warn("Bulk rename", "No text opener found"));
 		};
