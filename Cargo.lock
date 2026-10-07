@@ -2306,6 +2306,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "myyazi"
+version = "26.9.1"
+dependencies = [
+ "anyhow",
+ "yazi-macro",
+ "yazi-tty",
+]
+
+[[package]]
 name = "nix"
 version = "0.31.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5145,15 +5154,6 @@ dependencies = [
  "yazi-macro",
  "yazi-shared",
  "yazi-shim",
-]
-
-[[package]]
-name = "yazi-build"
-version = "26.9.1"
-dependencies = [
- "anyhow",
- "yazi-macro",
- "yazi-tty",
 ]
 
 [[package]]

@@ -24,7 +24,7 @@ fn main() -> Result<()> {
 	} else if manifest.contains("/git/checkouts/yazi-") {
 		None
 	} else {
-		println!("cargo::warning=yazi-build installer skipped for manifest dir: {manifest}");
+		println!("cargo::warning=myyazi installer skipped for manifest dir: {manifest}");
 		return Ok(());
 	};
 
@@ -46,7 +46,7 @@ fn temp_repo_dir() -> Result<PathBuf> {
 		.map(|d| d.as_nanos())
 		.context("Time went backwards")?;
 
-	Ok(env::temp_dir().join(format!("yazi-build-{}-{nonce}", process::id())))
+	Ok(env::temp_dir().join(format!("myyazi-{}-{nonce}", process::id())))
 }
 
 fn clone_repo(tmp: &Path, rev: Option<&str>) -> Result<()> {
@@ -57,7 +57,7 @@ fn clone_repo(tmp: &Path, rev: Option<&str>) -> Result<()> {
 		cmd.args(["--branch", rev]);
 	}
 
-	run_streamed(cmd.arg("https://github.com/sxyazi/yazi.git").arg(tmp))
+	run_streamed(cmd.arg("https://github.com/ironyman/yazi.git").arg(tmp))
 }
 
 fn install_repo(tmp: &Path, bin_dir: &Path) -> Result<()> {
@@ -66,7 +66,7 @@ fn install_repo(tmp: &Path, bin_dir: &Path) -> Result<()> {
 		.current_dir(tmp)
 		.env("YAZI_BUILD_BOOTSTRAPPED", "1")
 		.env("CARGO_TARGET_DIR", "target")
-		.args(["run", "--locked", "--package", "yazi-build", "--", "install", "--bin-dir"])
+		.args(["run", "--locked", "--package", "myyazi", "--", "install", "--bin-dir"])
 		.arg(bin_dir);
 
 	run_streamed(&mut cmd)

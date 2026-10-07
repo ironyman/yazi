@@ -26,7 +26,7 @@ pub(super) fn workspace_root() -> Result<PathBuf> {
 	Path::new(env!("CARGO_MANIFEST_DIR"))
 		.parent()
 		.map(Path::to_owned)
-		.context("yazi-build must be inside the Yazi workspace")
+		.context("myyazi must be inside the Yazi workspace")
 }
 
 pub(super) fn is_linux_target(target: &str) -> bool {

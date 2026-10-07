@@ -20,7 +20,7 @@ fn main() {
 		|| manifest.contains("/registry/src/index.crates.io-")
 	{
 		panic!(
-			"Due to Cargo's limitations, Yazi on crates.io must be built with `cargo install --force yazi-build`"
+			"Due to Cargo's limitations, Yazi on crates.io must be built with `cargo install --force myyazi`"
 		);
 	}
 }

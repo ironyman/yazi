@@ -1,5 +1,5 @@
 [alias]
-xtask = "run --locked --package yazi-build --"
+xtask = "run --locked --package myyazi --"
 
 [env]
 MACOSX_DEPLOYMENT_TARGET  = "10.12"

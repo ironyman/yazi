@@ -1,12 +1,12 @@
 [package]
-name                   = "yazi-build"
-description            = "Yazi build system"
+name                   = "myyazi"
+description            = "Installer for myyazi, my fork of the Yazi terminal file manager"
 version                = "26.9.1"
 edition.workspace      = true
 license.workspace      = true
 authors.workspace      = true
 homepage.workspace     = true
-repository.workspace   = true
+repository             = "https://github.com/ironyman/yazi"
 rust-version.workspace = true
 
 [lints]
@@ -25,5 +25,5 @@ yazi-tty = { path = "../yazi-tty", version = "26.9.1" }
 anyhow = { workspace = true }
 
 [[bin]]
-name = "yazi-build"
+name = "myyazi"
 path = "src/main.rs"
