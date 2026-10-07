@@ -35,6 +35,10 @@ pub struct Input {
 	find_origin: Origin,
 	find_offset: Offset,
 
+	find_enter_title:  [String; 2],
+	find_enter_origin: Origin,
+	find_enter_offset: Offset,
+
 	// shell
 	shell_title:  [String; 2],
 	shell_origin: Origin,
@@ -85,12 +89,18 @@ impl Input {
 		}
 	}
 
-	pub fn find(&self, prev: bool) -> InputOpt {
+	pub fn find(&self, prev: bool, enter: bool) -> InputOpt {
+		let (title, position) = if enter {
+			(&self.find_enter_title, Position::new(self.find_enter_origin, self.find_enter_offset))
+		} else {
+			(&self.find_title, Position::new(self.find_origin, self.find_offset))
+		};
+
 		InputOpt {
 			name: "find".to_owned(),
-			title: self.find_title[prev as usize].clone(),
+			title: title[prev as usize].clone(),
 			history: "shared".to_owned(),
-			position: Position::new(self.find_origin, self.find_offset),
+			position,
 			realtime: true,
 			..Default::default()
 		}

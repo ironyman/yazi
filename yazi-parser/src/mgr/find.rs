@@ -4,15 +4,22 @@ use yazi_shared::event::ActionCow;
 
 #[derive(Debug)]
 pub struct FindForm {
-	pub prev: bool,
-	pub case: FilterCase,
+	pub prev:  bool,
+	pub case:  FilterCase,
+	pub enter: bool,
+	pub auto:  bool,
 }
 
 impl TryFrom<ActionCow> for FindForm {
 	type Error = anyhow::Error;
 
 	fn try_from(a: ActionCow) -> Result<Self, Self::Error> {
-		Ok(Self { prev: a.bool("previous"), case: FilterCase::from(&*a) })
+		Ok(Self {
+			prev:  a.bool("previous"),
+			case:  FilterCase::from(&*a),
+			enter: a.bool("enter"),
+			auto:  a.bool("auto"),
+		})
 	}
 }
 

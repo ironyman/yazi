@@ -19,12 +19,14 @@ impl Actor for Show {
 	fn act(cx: &mut Ctx, Self::Form { mut opt }: Self::Form) -> Result<Data> {
 		act!(input:close, cx)?;
 
-		let area = cx.mgr.area(opt.position).padding(cx.input.padding());
 		let input = &mut cx.input;
 		input.main.name = opt.name.clone();
 		input.main.title = opt.title.clone();
 		input.main.position = opt.position;
 		input.main.visible = true;
+
+		let area = cx.mgr.area(opt.position).padding(cx.input.padding());
+		let input = &mut cx.input;
 
 		opt.styles = (&THEME.input).into();
 		opt.blinking = YAZI.input.cursor_blink.get();

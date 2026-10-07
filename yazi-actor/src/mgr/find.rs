@@ -21,14 +21,23 @@ impl Actor for Find {
 	const NAME: &str = "find";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
-		let input = input!(cx, YAZI.input.find(form.prev))?;
+		let input = input!(cx, YAZI.input.find(form.prev, form.enter))?;
 
 		tokio::spawn(async move {
 			let rx = Debounce::new(UnboundedReceiverStream::new(input), Duration::from_millis(50));
 			pin!(rx);
 
-			while let Some(InputEvent::Submit(s) | InputEvent::Type(s)) = rx.next().await {
-				MgrProxy::find_do(FindDoOpt { query: s.into(), prev: form.prev, case: form.case });
+			while let Some(event) = rx.next().await {
+				let enter = form.enter && event.is_submit();
+				let (InputEvent::Submit(s) | InputEvent::Type(s)) = event else { break };
+
+				MgrProxy::find_do(FindDoOpt {
+					query: s.into(),
+					prev: form.prev,
+					case: form.case,
+					enter,
+					auto: form.auto,
+				});
 			}
 		});
 		succ!();

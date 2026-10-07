@@ -9,6 +9,8 @@ pub struct FindDoOpt {
 	pub query: SStr,
 	pub prev:  bool,
 	pub case:  FilterCase,
+	pub enter: bool,
+	pub auto:  bool,
 }
 
 impl_data_any!(FindDoOpt);
@@ -21,6 +23,12 @@ impl TryFrom<ActionCow> for FindDoOpt {
 			bail!("Invalid 'query' in FindDoOpt");
 		};
 
-		Ok(Self { query, prev: a.bool("previous"), case: FilterCase::from(&*a) })
+		Ok(Self {
+			query,
+			prev: a.bool("previous"),
+			case: FilterCase::from(&*a),
+			enter: a.bool("enter"),
+			auto: a.bool("auto"),
+		})
 	}
 }

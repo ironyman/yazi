@@ -3,7 +3,7 @@ use yazi_macro::impl_data_any;
 use yazi_shared::{event::ActionCow, url::UrlBuf};
 
 // --- OpenOpt
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct OpenOpt {
 	pub cwd:         Option<UrlBuf>,
 	pub targets:     Vec<UrlBuf>,

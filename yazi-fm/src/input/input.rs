@@ -1,11 +1,11 @@
 use std::path::Path;
 
-use ratatui_core::{buffer::Buffer, layout::{Margin, Rect}, text::Line, widgets::Widget};
+use ratatui_core::{buffer::Buffer, layout::Rect, text::Line, widgets::Widget};
 use ratatui_widgets::{block::Block, borders::BorderType};
 use yazi_config::{Icon, THEME};
 use yazi_core::Core;
 use yazi_fs::{file::File, stat::{Stat, StatKind}};
-use yazi_shim::path::CROSS_SEPARATOR;
+use yazi_shim::{path::CROSS_SEPARATOR, ratatui::Padable};
 
 pub(crate) struct Input<'a> {
 	core: &'a mut Core,
@@ -46,6 +46,13 @@ impl Widget for Input<'_> {
 		let outer = self.core.mgr.area(self.core.input.main.position);
 		yazi_widgets::clear::Clear::default().render(outer, buf);
 
+		let inner = outer.padding(self.core.input.padding());
+		if outer.height == 1 {
+			Line::styled(&self.core.input.main.title, THEME.input.title.get()).render(outer, buf);
+			self.core.input.main.repos(inner);
+			return self.core.input.main.render(inner, buf);
+		}
+
 		let mut block = Block::bordered()
 			.border_type(BorderType::Rounded)
 			.border_style(THEME.input.border.get())
@@ -56,7 +63,6 @@ impl Widget for Input<'_> {
 		}
 		block.render(outer, buf);
 
-		let inner = outer.inner(Margin::new(1, 1));
 		self.core.input.main.repos(inner);
 		self.core.input.main.render(inner, buf);
 	}

@@ -57,14 +57,12 @@ impl Search {
 		}
 	}
 
-	/// Reads `dir` breadth-first, skipping hidden entries; returns `false` once the limit is reached.
+	/// Reads `dir` breadth-first, without descending into hidden directories;
+	/// returns `false` once the limit is reached.
 	fn read(&mut self, dir: &Path, dirs: &mut VecDeque<PathBuf>) -> bool {
 		let Ok(it) = std::fs::read_dir(dir) else { return true };
 		for entry in it.flatten() {
-			if entry.file_name().as_encoded_bytes().starts_with(b".") {
-				continue;
-			}
-
+			let hidden = entry.file_name().as_encoded_bytes().starts_with(b".");
 			let path = entry.path();
 			let Ok(rel) = path.strip_prefix(&self.root).map(|p| p.to_string_lossy()) else {
 				continue;
@@ -79,7 +77,7 @@ impl Search {
 			};
 
 			let dir = entry.file_type().is_ok_and(|t| t.is_dir());
-			if dir {
+			if dir && !hidden {
 				dirs.push_back(path.clone());
 			}
 

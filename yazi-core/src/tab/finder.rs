@@ -50,6 +50,10 @@ impl Finder {
 		None
 	}
 
+	pub fn unique(&self, entries: &Entries) -> bool {
+		entries.iter().filter_map(|f| f.name()).filter(|&s| self.filter.matches(s)).take(2).count() == 1
+	}
+
 	pub fn catchup(&mut self, folder: &Folder) -> bool {
 		if self.lock == *folder {
 			return false;

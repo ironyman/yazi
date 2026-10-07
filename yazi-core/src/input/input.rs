@@ -2,6 +2,7 @@ use std::{ops::{Deref, DerefMut}, sync::Arc};
 
 use parking_lot::Mutex;
 use ratatui_widgets::block::Padding;
+use unicode_width::UnicodeWidthStr;
 use yazi_binding::{elements::Spatial, position::Position};
 
 use crate::input::{InputGuard, InputHistories, InputMutGuard};
@@ -16,7 +17,15 @@ pub struct Input {
 impl Input {
 	pub(crate) fn focus(&self) -> bool { self.main.visible || self.alt.is_some() }
 
-	pub fn padding(&self) -> Padding { Padding::new(1, 1, 1, 1) }
+	/// A single-row input is bare, with the title as an inline prompt;
+	/// otherwise it's bordered.
+	pub fn padding(&self) -> Padding {
+		if self.main.position.height == 1 {
+			Padding::left(self.main.title.width() as u16)
+		} else {
+			Padding::uniform(1)
+		}
+	}
 
 	pub(crate) fn position(&self) -> Option<Position> {
 		if self.main.visible {

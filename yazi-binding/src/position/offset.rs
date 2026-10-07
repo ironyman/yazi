@@ -31,8 +31,8 @@ impl TryFrom<[i16; 4]> for Offset {
 		if values[2] < 0 || values[3] < 0 {
 			bail!("offset width and height must be positive: {:?}", values);
 		}
-		if values[3] < 3 {
-			bail!("offset height must be at least 3: {:?}", values);
+		if values[3] != 1 && values[3] < 3 {
+			bail!("offset height must be 1 (bare) or at least 3 (bordered): {:?}", values);
 		}
 
 		Ok(Self {
