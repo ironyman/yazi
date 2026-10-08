@@ -1,7 +1,7 @@
 [package]
 name                   = "myyazi"
 description            = "Installer for myyazi, my fork of the Yazi terminal file manager"
-version                = "26.9.1"
+version                = "26.10.0"
 edition.workspace      = true
 license.workspace      = true
 authors.workspace      = true
