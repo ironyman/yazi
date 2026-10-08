@@ -253,7 +253,7 @@ impl<'a> Url<'a> {
 		}
 	}
 
-	pub(crate) fn triple(self) -> (PathDyn<'a>, PathDyn<'a>, PathDyn<'a>) {
+	pub fn triple(self) -> (PathDyn<'a>, PathDyn<'a>, PathDyn<'a>) {
 		match self {
 			Self::Os { loc, .. } => {
 				let (base, rest, urn) = loc.triple();
@@ -395,7 +395,7 @@ impl<'a> Url<'a> {
 	}
 
 	#[inline]
-	pub(crate) fn uri(self) -> PathDyn<'a> {
+	pub fn uri(self) -> PathDyn<'a> {
 		match self {
 			Self::Os { loc, .. } => loc.uri().dyn_path(),
 			Self::Unix { loc, .. } => loc.uri().dyn_path(),

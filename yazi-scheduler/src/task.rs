@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 use tokio::sync::mpsc;
-use yazi_shared::id::Id;
+use yazi_shared::{id::Id, url::UrlBuf};
 
 use crate::{TaskHandle, TaskIn, TaskProg, hook::HookIn};
 
@@ -9,6 +9,7 @@ use crate::{TaskHandle, TaskIn, TaskProg, hook::HookIn};
 pub struct Task {
 	pub(crate) handle: TaskHandle,
 	pub title:         String,
+	pub target:        Option<UrlBuf>,
 	pub(crate) prog:   TaskProg,
 	pub(crate) hook:   Option<HookIn>,
 
@@ -27,6 +28,7 @@ impl Task {
 		Self {
 			handle: TaskHandle::new(id),
 			title,
+			target: None,
 			prog,
 			hook: None,
 

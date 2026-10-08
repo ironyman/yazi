@@ -4,9 +4,10 @@ function M:fetch(job)
 	return ya.co(function()
 		local mime, updates = nil, {}
 		for _, file in ipairs(job.files) do
-			if file.url.spec.scheme == "sftp" then
+			local scheme = file.url.spec.scheme
+			if scheme == "sftp" or scheme == "archive" then
 				mime = "folder/remote"
-			elseif file.url.spec.scheme == "trash" then
+			elseif scheme == "trash" then
 				mime = "trash/folder/local"
 			else
 				mime = "folder/local"

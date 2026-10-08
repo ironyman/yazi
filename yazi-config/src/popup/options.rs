@@ -81,6 +81,49 @@ impl ConfirmCfg {
 		)
 	}
 
+	pub fn quit_staged(archives: Vec<String>, tasks: Vec<String>) -> Self {
+		let body = format!(
+			"Staged changes to {} archive{} haven't been committed and will be lost{}. Quit anyway?",
+			archives.len(),
+			if archives.len() > 1 { "s" } else { "" },
+			if tasks.is_empty() { "" } else { ", and unfinished tasks will be canceled" },
+		);
+
+		let len = archives.len() + tasks.len();
+		Self::new(
+			"Discard uncommitted archive changes?".to_owned(),
+			YAZI.confirm.quit_position(),
+			Some(Text::raw(body)),
+			Some(Self::truncate_lines(archives.into_iter().chain(tasks), len, 10)),
+		)
+	}
+
+	pub fn pending(archive: String, ops: Vec<String>, committing: bool) -> Self {
+		let len = ops.len();
+		let (state, question) = match committing {
+			true => ("being committed", "The commit is in progress."),
+			false => ("pending", "Commit them now?"),
+		};
+		Self::new(
+			format!("{len} change{} to {archive} {state}", if len > 1 { "s" } else { "" }),
+			YAZI.confirm.quit_position(),
+			Some(Text::raw(format!(
+				"+ added  ~ modified  > moved  - removed
+{question}"
+			))),
+			Some(Self::truncate_lines(ops, len, 500)),
+		)
+	}
+
+	pub fn discard(archive: String, changes: usize) -> Self {
+		Self::new(
+			Self::replace_number("Discard {n} staged change{s}?", changes),
+			YAZI.confirm.quit_position(),
+			Some(Text::raw("The archive will be left as it was when it was last committed.")),
+			Some(Text::raw(archive)),
+		)
+	}
+
 	fn replace_number(tpl: &str, n: usize) -> String {
 		tpl.replace("{n}", &n.to_string()).replace("{s}", if n > 1 { "s" } else { "" })
 	}

@@ -18,7 +18,15 @@ impl Actor for ToggleAll {
 		let tab = cx.tab_mut();
 
 		let it = tab.current.entries.iter();
-		let either = match form.state {
+		let state = if !form.auto {
+			form.state
+		} else if form.files.is_empty() {
+			Some(!tab.current.entries.iter().all(|f| tab.selected.contains(f)))
+		} else {
+			Some(!form.files.iter().all(|f| tab.selected.contains(f)))
+		};
+
+		let either = match state {
 			Some(true) if form.files.is_empty() => Left((vec![], it.collect())),
 			Some(true) => Right((vec![], form.files)),
 			Some(false) if form.files.is_empty() => Left((it.collect(), vec![])),

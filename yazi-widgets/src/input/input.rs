@@ -45,6 +45,9 @@ impl Input {
 		Ok(input)
 	}
 
+	/// Takes effect with the next value set.
+	pub fn set_obscure(&mut self, obscure: bool) { self.obscure = obscure; }
+
 	pub fn repos(&mut self, area: Rect) {
 		let size = area.into();
 
@@ -156,8 +159,10 @@ impl Input {
 		let (start, end) =
 			if start < snap.cursor { (start, snap.cursor) } else { (snap.cursor + 1, start + 1) };
 
+		// Clamped to the window, which an empty value or a pending yank can exceed
 		let win = snap.window(self.size.width as usize);
-		let Range { start, end } = start.max(win.start)..end.min(win.end);
+		let end = end.min(win.end);
+		let start = start.max(win.start).min(end);
 
 		let s = snap.width(snap.offset..start);
 		Some(s..s + snap.width(start..end))

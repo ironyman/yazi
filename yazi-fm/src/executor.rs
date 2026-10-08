@@ -128,6 +128,7 @@ impl<'a> Executor<'a> {
 		on!(bulk_exit);
 		on!(bulk_rename);
 		on!(bulk_create);
+		on!(archive);
 
 		// Filter
 		on!(filter);
@@ -186,6 +187,8 @@ impl<'a> Executor<'a> {
 		on!(arrow);
 		on!(inspect);
 		on!(cancel);
+		on!(filter);
+		on!(reveal);
 		on!(process_open);
 
 		match action.name.as_ref() {
@@ -356,8 +359,10 @@ impl<'a> Executor<'a> {
 		on!(escape);
 		on!(arrow);
 		on!(cycle);
+		on!(nudge);
 		on!(close);
 		on!(complete);
+		on!(unlist);
 		on!(update_files);
 
 		match action.name.as_ref() {

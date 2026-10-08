@@ -1,6 +1,6 @@
 use std::{borrow::Cow, fmt::Formatter, hash::{Hash, Hasher}, path::{Path, PathBuf}, str::FromStr};
 
-use anyhow::{Result, ensure};
+use anyhow::{Result, bail, ensure};
 use serde::{Deserialize, Serialize, de::{self, IntoDeserializer}};
 use yazi_macro::impl_data_any;
 
@@ -140,6 +140,17 @@ impl UrlBuf {
 			Self::Os { loc, .. } => Self::Os { loc: LocBuf::zeroed(loc.into_inner()), auth },
 			Self::Unix { loc, .. } => Self::Unix { loc: LocBuf::zeroed(loc.into_inner()), auth },
 		})
+	}
+
+	pub fn into_mount(self, auth: AuthArc) -> Result<Self> {
+		ensure!(auth.kind.is_mount(), "Mount authority required");
+
+		match self {
+			Self::Os { loc, auth: source } if source.is_regular() => {
+				Ok(Self::Os { loc: LocBuf::zeroed(loc.into_inner()), auth })
+			}
+			_ => bail!("Mount source must be a regular path"),
+		}
 	}
 
 	pub fn into_physical(self) -> Self {

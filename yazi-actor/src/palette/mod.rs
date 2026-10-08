@@ -1,1 +1,1 @@
-yazi_macro::mod_flat!(arrow close complete cycle escape show update_files);
+yazi_macro::mod_flat!(arrow close complete cycle escape nudge show unlist update_files);

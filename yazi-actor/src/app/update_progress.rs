@@ -20,10 +20,8 @@ impl Actor for UpdateProgress {
 		tasks.summary = form.summary;
 
 		// If the task manager is visible, update the snaps with a full render.
-		if tasks.visible {
-			let new = tasks.paginate();
-			if tasks.snaps != new {
-				tasks.snaps = new;
+		if tasks.visible && tasks.refresh() {
+			{
 				act!(tasks:arrow, cx)?;
 				succ!(render!());
 			}

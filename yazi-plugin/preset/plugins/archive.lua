@@ -2,11 +2,18 @@ local M = {}
 
 function M:peek(job)
 	local limit = job.area.h
-	local items, err = self.list_archive({ "-p", tostring(job.file.path) }, job.skip, limit)
-
-	local first = (#items == 1 and items[1]) or (#items == 0 and M.list_if_only_one(job.file.path))
-	if first and M.should_decompress_tar(job.file, first) then
-		items, err = self.list_compressed_tar({ "-p", tostring(job.file.path) }, job.skip, limit)
+	local items, err
+	local mount = fs.archive.mount_url(job.file.url)
+	if job.file.url.spec.scheme == "archive" then
+		items, err = {}, Err("Archives inside archives are not supported, extract it first")
+	elseif mount then
+		items, err = M.list_mounted(mount, job.skip, limit)
+	else
+		items, err = self.list_archive({ "-p", tostring(job.file.path) }, job.skip, limit)
+		local first = (#items == 1 and items[1]) or (#items == 0 and M.list_if_only_one(job.file.path))
+		if first and M.should_decompress_tar(job.file, first) then
+			items, err = self.list_compressed_tar({ "-p", tostring(job.file.path) }, job.skip, limit)
+		end
 	end
 
 	if err then
@@ -56,6 +63,48 @@ function M:peek(job)
 end
 
 function M:seek(job) require("code"):seek(job) end
+
+---List items of an archive supported by the built-in archive file system, as a tree
+---@param url Url
+---@param skip integer
+---@param limit integer
+---@return table items
+---@return Error? err
+function M.list_mounted(url, skip, limit)
+	local items, max = {}, skip + limit
+
+	local function walk(dir, depth)
+		local files, err = fs.read_dir(dir, { resolve = true })
+		if not files then
+			return err
+		end
+
+		table.sort(files, function(a, b)
+			if a.stat.is_dir ~= b.stat.is_dir then
+				return a.stat.is_dir
+			end
+			return a.name < b.name
+		end)
+
+		for _, f in ipairs(files) do
+			if #items >= max then
+				return
+			elseif f.name ~= "__MACOSX" then
+				items[#items + 1] = M.make_item { path = f.name, size = f.stat.len, is_dir = f.stat.is_dir, depth = depth }
+				local err = f.stat.is_dir and walk(f.url, depth + 1)
+				if err then
+					return err
+				end
+			end
+		end
+	end
+
+	local err = walk(url, 0)
+	if err and err.kind == "PermissionDenied" then
+		return items, Err("File list of the archive is encrypted")
+	end
+	return items, err
+end
 
 function M.spawn_7z(args)
 	local last_err = nil

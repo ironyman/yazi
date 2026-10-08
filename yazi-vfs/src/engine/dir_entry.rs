@@ -5,6 +5,7 @@ use yazi_shared::{path::PathBufDyn, strand::StrandCow, url::UrlBuf};
 
 pub enum DirEntry {
 	Local(yazi_fs::engine::local::DirEntry),
+	Archive(super::archive::DirEntry),
 	Lua(super::lua::DirEntry),
 	Sftp(super::sftp::DirEntry),
 }
@@ -13,6 +14,7 @@ impl FileHolder for DirEntry {
 	async fn file(&self) -> io::Result<File> {
 		match self {
 			Self::Local(dent) => dent.file().await,
+			Self::Archive(dent) => dent.file().await,
 			Self::Lua(dent) => dent.file().await,
 			Self::Sftp(dent) => dent.file().await,
 		}
@@ -21,6 +23,7 @@ impl FileHolder for DirEntry {
 	async fn file_type(&self) -> io::Result<StatType> {
 		match self {
 			Self::Local(dent) => dent.file_type().await,
+			Self::Archive(dent) => dent.file_type().await,
 			Self::Lua(dent) => dent.file_type().await,
 			Self::Sftp(dent) => dent.file_type().await,
 		}
@@ -29,6 +32,7 @@ impl FileHolder for DirEntry {
 	async fn metadata(&self) -> io::Result<Stat> {
 		match self {
 			Self::Local(dent) => dent.metadata().await,
+			Self::Archive(dent) => dent.metadata().await,
 			Self::Lua(dent) => dent.metadata().await,
 			Self::Sftp(dent) => dent.metadata().await,
 		}
@@ -37,6 +41,7 @@ impl FileHolder for DirEntry {
 	fn name(&self) -> StrandCow<'_> {
 		match self {
 			Self::Local(dent) => dent.name(),
+			Self::Archive(dent) => dent.name(),
 			Self::Lua(dent) => dent.name(),
 			Self::Sftp(dent) => dent.name(),
 		}
@@ -45,6 +50,7 @@ impl FileHolder for DirEntry {
 	fn path(&self) -> PathBufDyn {
 		match self {
 			Self::Local(dent) => dent.path(),
+			Self::Archive(dent) => dent.path(),
 			Self::Lua(dent) => dent.path(),
 			Self::Sftp(dent) => dent.path(),
 		}
@@ -53,6 +59,7 @@ impl FileHolder for DirEntry {
 	fn url(&self) -> UrlBuf {
 		match self {
 			Self::Local(dent) => dent.url(),
+			Self::Archive(dent) => dent.url(),
 			Self::Lua(dent) => dent.url(),
 			Self::Sftp(dent) => dent.url(),
 		}

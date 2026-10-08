@@ -30,6 +30,7 @@ pub enum Spark<'a> {
 	AppUpdateProgress(crate::app::UpdateProgressForm),
 
 	// Mgr
+	Archive(crate::mgr::ArchiveForm),
 	Arrow(crate::ArrowForm),
 	Back(crate::VoidForm),
 	BulkCreate(crate::VoidForm),
@@ -121,7 +122,9 @@ pub enum Spark<'a> {
 	PaletteComplete(crate::VoidForm),
 	PaletteCycle(crate::ArrowForm),
 	PaletteEscape(crate::VoidForm),
+	PaletteNudge(crate::ArrowForm),
 	PaletteShow(crate::palette::ShowForm),
+	PaletteUnlist(crate::VoidForm),
 	PaletteUpdateFiles(crate::palette::UpdateFilesForm),
 
 	// Pager
@@ -163,6 +166,8 @@ pub enum Spark<'a> {
 	// Tasks
 	TasksArrow(crate::ArrowForm),
 	TasksCancel(crate::VoidForm),
+	TasksFilter(crate::ArrowForm),
+	TasksReveal(crate::VoidForm),
 	TasksClose(crate::VoidForm),
 	TasksInspect(crate::VoidForm),
 	TasksOpenShellCompat(crate::tasks::ProcessOpenForm),
@@ -245,6 +250,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::AppUpdateProgress(b) => b.into_lua(lua),
 
 			// Mgr
+			Self::Archive(b) => b.into_lua(lua),
 			Self::Arrow(b) => b.into_lua(lua),
 			Self::Back(b) => b.into_lua(lua),
 			Self::BulkCreate(b) => b.into_lua(lua),
@@ -336,7 +342,9 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::PaletteComplete(b) => b.into_lua(lua),
 			Self::PaletteCycle(b) => b.into_lua(lua),
 			Self::PaletteEscape(b) => b.into_lua(lua),
+			Self::PaletteNudge(b) => b.into_lua(lua),
 			Self::PaletteShow(b) => b.into_lua(lua),
+			Self::PaletteUnlist(b) => b.into_lua(lua),
 			Self::PaletteUpdateFiles(b) => b.into_lua(lua),
 
 			// Pager
@@ -378,6 +386,8 @@ impl<'a> IntoLua for Spark<'a> {
 			// Tasks
 			Self::TasksArrow(b) => b.into_lua(lua),
 			Self::TasksCancel(b) => b.into_lua(lua),
+			Self::TasksFilter(b) => b.into_lua(lua),
+			Self::TasksReveal(b) => b.into_lua(lua),
 			Self::TasksClose(b) => b.into_lua(lua),
 			Self::TasksInspect(b) => b.into_lua(lua),
 			Self::TasksOpenShellCompat(b) => b.into_lua(lua),
@@ -444,6 +454,7 @@ try_from_spark!(crate::pager::PushForm, pager:push);
 try_from_spark!(crate::palette::CloseForm, palette:close);
 try_from_spark!(crate::palette::ShowForm, palette:show);
 try_from_spark!(crate::palette::UpdateFilesForm, palette:update_files);
+try_from_spark!(crate::mgr::ArchiveForm, mgr:archive);
 try_from_spark!(crate::mgr::BulkExitForm, mgr:bulk_exit);
 try_from_spark!(crate::mgr::CdForm, mgr:cd);
 try_from_spark!(crate::mgr::CloseForm, mgr:close);

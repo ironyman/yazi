@@ -1,4 +1,5 @@
 yazi_macro::mod_flat!(
+	archive
 	arrow
 	back
 	bulk_create

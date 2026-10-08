@@ -50,6 +50,9 @@ impl FileBuilder for Demand {
 			AuthKind::Sftp => {
 				(self.0.build::<super::sftp::Demand>().open(physical).await?, physical.to_owned()).into()
 			}
+			AuthKind::Mount if super::archive::is_archive(physical) => {
+				(self.0.build::<super::archive::Demand>().open(physical).await?, physical.to_owned()).into()
+			}
 			AuthKind::Mount | AuthKind::Hub | AuthKind::Scope | AuthKind::View => {
 				self.0.build::<super::lua::Demand>().open(physical).await?.into()
 			}

@@ -67,10 +67,16 @@ function M:try_with(pwd)
 		fail("Failed to determine a temporary directory for %s", from)
 	end
 
+	local mount = fs.archive.mount_url(from)
+	if mount then
+		return self:try_builtin(mount, tmp, pwd)
+	end
+
 	local archive = require("archive")
 	local child, err = archive.spawn_7z { "x", "-aou", "-sccUTF-8", "-p" .. pwd, "-o" .. tostring(tmp), tostring(from) }
 	if not child then
-		fail("Failed to start either `7zz` or `7z`, error: " .. err)
+		fs.remove("dir", tmp)
+		fail("Failed to start either `7zz` or `7z`, error: %s", err or "not found")
 	end
 
 	local output, err = child:wait_with_output()
@@ -87,6 +93,49 @@ function M:try_with(pwd)
 	else
 		return target, false
 	end
+end
+
+-- Extracts with the built-in archive file system, for the formats it supports
+function M:try_builtin(mount, tmp, pwd)
+	local from = self.job.from
+	local locked, err = fs.archive.mount(from, pwd ~= "" and pwd or nil)
+	local ok = false
+	if not err and not locked then
+		ok, err = M.copy_tree(mount, tmp)
+	end
+
+	if ok then
+		return self:tidy(tmp), false
+	end
+
+	fs.remove("dir_all", tmp)
+	if locked or err.kind == "PermissionDenied" then
+		return nil, true -- Need to retry
+	end
+	fail("Failed to extract '%s': %s", from, err)
+end
+
+function M.copy_tree(from, to)
+	local files, err = fs.read_dir(from, { resolve = true })
+	if not files then
+		return false, err
+	end
+
+	for _, f in ipairs(files) do
+		local dst, ok = to:join(f.name), nil
+		if f.stat.is_dir then
+			ok, err = fs.create("dir_all", dst)
+			if ok then
+				ok, err = M.copy_tree(f.url, dst)
+			end
+		else
+			ok, err = fs.copy(f.url, dst)
+		end
+		if not ok then
+			return false, err
+		end
+	end
+	return true
 end
 
 function M:tidy(tmp)

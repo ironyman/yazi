@@ -26,6 +26,11 @@ impl Actor for Complete {
 			Some(Entry::File { label, dir: true, .. }) => format!("{label}{MAIN_SEPARATOR}"),
 			Some(Entry::File { label, .. } | Entry::Shell(label) | Entry::Run(label)) => label.clone(),
 			Some(Entry::Recent(r)) => r.url.to_string(),
+			Some(e @ Entry::Listed(_)) => e.label().into_owned(),
+			Some(&Entry::Field(f)) => {
+				palette.draft.cycle(f, 1);
+				succ!(palette.filter_apply());
+			}
 		};
 
 		let value = format!("{}{value}", palette.prefix());

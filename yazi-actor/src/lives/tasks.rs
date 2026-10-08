@@ -25,6 +25,7 @@ impl Tasks {
 impl UserData for Tasks {
 	fn add_fields<F: UserDataFields<Self>>(fields: &mut F) {
 		fields.add_field_method_get("cursor", |_, me| Ok(me.cursor));
+		fields.add_field_method_get("filter", |_, me| Ok(me.filter.name()));
 
 		fields.add_static_field("behavior", |_, me| Behavior::make(&me.scheduler.behavior));
 

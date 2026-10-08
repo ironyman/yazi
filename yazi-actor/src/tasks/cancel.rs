@@ -15,12 +15,21 @@ impl Actor for Cancel {
 	fn act(cx: &mut Ctx, _: Self::Form) -> Result<Data> {
 		let tasks = &mut cx.tasks;
 
-		let id = tasks.scheduler.ongoing.lock().get_id(tasks.cursor);
-		if id.map(|id| tasks.scheduler.cancel(id)) != Some(true) {
+		let Some(id) = tasks.scheduler.ongoing.lock().get_id(tasks.filter, tasks.cursor) else {
+			succ!();
+		};
+
+		// Finished tasks are only history, so they are removed from it instead
+		let done = if tasks.filter.is_finished() || !tasks.scheduler.ongoing.lock().exists(id) {
+			tasks.scheduler.ongoing.lock().dismiss(id)
+		} else {
+			tasks.scheduler.cancel(id)
+		};
+		if !done {
 			succ!();
 		}
 
-		tasks.snaps = tasks.paginate();
+		tasks.refresh();
 		act!(tasks:arrow, cx)?;
 		succ!(render!());
 	}

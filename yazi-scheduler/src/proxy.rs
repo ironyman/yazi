@@ -48,6 +48,14 @@ impl TasksProxy {
 pub struct NotifyProxy;
 
 impl NotifyProxy {
+	pub fn push_info(title: impl Into<SStr>, content: impl Into<SStr>) {
+		emit!(Call(
+			relay!(notify:push, [content.into(), title.into()])
+				.with("level", SStr::Borrowed("info"))
+				.with("timeout", 5f64)
+		));
+	}
+
 	pub fn push_warn(title: impl Into<SStr>, content: impl Into<SStr>) {
 		emit!(Call(
 			relay!(notify:push, [content.into(), title.into()])

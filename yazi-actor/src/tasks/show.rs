@@ -19,7 +19,7 @@ impl Actor for Show {
 		}
 
 		tasks.visible = true;
-		tasks.snaps = tasks.paginate();
+		tasks.refresh();
 
 		act!(tasks:arrow, cx)?;
 		succ!(render!());

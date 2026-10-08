@@ -1,13 +1,20 @@
+use std::collections::VecDeque;
+
 use hashbrown::{HashMap, hash_map::Entry};
 use yazi_config::YAZI;
 use yazi_shared::id::{Id, Ids};
 
-use super::Task;
+use super::{Progress, Task, TaskFilter};
 use crate::{TaskHandle, TaskIn, TaskProg, hook::HookIn};
+
+/// How many finished tasks are kept for the task manager.
+const HISTORY: usize = 200;
 
 #[derive(Default)]
 pub struct Ongoing {
-	inner: HashMap<Id, Task>,
+	inner:    HashMap<Id, Task>,
+	/// Finished user tasks, oldest first, with how they ended.
+	finished: VecDeque<(Task, TaskFilter)>,
 }
 
 impl Ongoing {
@@ -22,7 +29,9 @@ impl Ongoing {
 		let title = r#in.set_id(id).title().into_owned();
 		let prog = T::Prog::default().into();
 
-		self.inner.entry(id).insert(Task::new(id, title, prog)).into_mut()
+		let mut task = Task::new(id, title, prog);
+		task.target = r#in.target();
+		self.inner.entry(id).insert(task).into_mut()
 	}
 
 	pub(super) fn cancel(&mut self, id: Id) -> Option<HookIn> {
@@ -35,23 +44,67 @@ impl Ongoing {
 					return Some(hook);
 				}
 
-				oe.remove();
+				let task = oe.remove();
+				let outcome = if task.prog.failed() { TaskFilter::Failed } else { TaskFilter::Canceled };
+				self.finish(task, outcome);
 			}
 			Entry::Vacant(_) => {}
 		}
 		None
 	}
 
-	pub(super) fn fulfill(&mut self, id: Id) -> Option<Task> {
-		let task = self.inner.remove(&id)?;
+	pub(super) fn fulfill(&mut self, id: Id) {
+		let Some(task) = self.inner.remove(&id) else { return };
 		task.succeed();
-		Some(task)
+
+		// Canceled tasks with a cleanup hook end here too, once it ran
+		let outcome = if task.is_canceled() { TaskFilter::Canceled } else { TaskFilter::Completed };
+		self.finish(task, outcome);
+	}
+
+	fn finish(&mut self, task: Task, outcome: TaskFilter) {
+		if !task.prog.is_user() {
+			return;
+		}
+		if self.finished.len() >= HISTORY {
+			self.finished.pop_front();
+		}
+		self.finished.push_back((task, outcome));
+	}
+
+	/// Removes a finished task from the history, returning whether it was there.
+	pub fn dismiss(&mut self, id: Id) -> bool {
+		let len = self.finished.len();
+		self.finished.retain(|(t, _)| t.id != id);
+		len != self.finished.len()
 	}
 
 	#[inline]
-	pub fn get_mut(&mut self, id: Id) -> Option<&mut Task> { self.inner.get_mut(&id) }
+	pub fn get_mut(&mut self, id: Id) -> Option<&mut Task> {
+		match self.inner.get_mut(&id) {
+			Some(task) => Some(task),
+			None => self.finished.iter_mut().find(|(t, _)| t.id == id).map(|(t, _)| t),
+		}
+	}
 
-	pub fn get_id(&self, idx: usize) -> Option<Id> { self.values().nth(idx).map(|t| t.id) }
+	pub fn get_id(&self, filter: TaskFilter, idx: usize) -> Option<Id> {
+		self.view(filter).nth(idx).map(|t| t.id)
+	}
+
+	/// Tasks matching the filter: running tasks unordered, finished ones newest first.
+	pub fn view(&self, filter: TaskFilter) -> Box<dyn Iterator<Item = &Task> + '_> {
+		let history = move |f: TaskFilter| {
+			self.finished.iter().rev().filter(move |&&(_, o)| o == f).map(|(t, _)| t)
+		};
+
+		match filter {
+			TaskFilter::Running => Box::new(self.values().filter(|t| !t.prog.failed())),
+			TaskFilter::Failed => {
+				Box::new(self.values().filter(|t| t.prog.failed()).chain(history(TaskFilter::Failed)))
+			}
+			f => Box::new(history(f)),
+		}
+	}
 
 	#[inline]
 	pub(crate) fn get_handle(&self, id: Id) -> Option<TaskHandle> {

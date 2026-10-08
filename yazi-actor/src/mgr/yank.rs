@@ -18,8 +18,12 @@ impl Actor for Yank {
 
 		act!(mgr:escape_visual, cx)?;
 
-		cx.mgr.yanked =
-			Yanked::new(form.cut, cx.tab().selected_or_hovered_files().map(Into::into).collect());
+		let files: Vec<_> = cx.tab().selected_or_hovered_files().map(Into::into).collect();
+		if form.add && !cx.mgr.yanked.is_empty() {
+			cx.mgr.yanked.extend(files);
+		} else {
+			cx.mgr.yanked = Yanked::new(form.cut, files.into_iter().collect());
+		}
 		render!(cx.mgr.yanked.catchup_revision(true));
 
 		act!(mgr:escape_select, cx)

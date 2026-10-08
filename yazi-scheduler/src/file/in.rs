@@ -150,6 +150,8 @@ pub struct FileInCopy {
 impl TaskIn for FileInCopy {
 	type Prog = FileProgCopy;
 
+	fn target(&self) -> Option<UrlBuf> { Some(self.to.clone()) }
+
 	fn id(&self) -> Id { self.id }
 
 	fn set_id(&mut self, id: Id) -> &mut Self {
@@ -210,6 +212,8 @@ pub struct FileInMove {
 
 impl TaskIn for FileInMove {
 	type Prog = FileProgMove;
+
+	fn target(&self) -> Option<UrlBuf> { Some(self.to.clone()) }
 
 	fn id(&self) -> Id { self.id }
 
@@ -289,6 +293,8 @@ impl FileInLink {
 impl TaskIn for FileInLink {
 	type Prog = FileProgLink;
 
+	fn target(&self) -> Option<UrlBuf> { Some(self.to.clone()) }
+
 	fn id(&self) -> Id { self.id }
 
 	fn set_id(&mut self, id: Id) -> &mut Self {
@@ -315,6 +321,8 @@ pub(crate) struct FileInHardlink {
 impl TaskIn for FileInHardlink {
 	type Prog = FileProgHardlink;
 
+	fn target(&self) -> Option<UrlBuf> { Some(self.to.clone()) }
+
 	fn id(&self) -> Id { self.id }
 
 	fn set_id(&mut self, id: Id) -> &mut Self {
@@ -338,6 +346,8 @@ pub(crate) struct FileInDelete {
 impl TaskIn for FileInDelete {
 	type Prog = FileProgDelete;
 
+	fn target(&self) -> Option<UrlBuf> { Some(self.target.clone()) }
+
 	fn id(&self) -> Id { self.id }
 
 	fn set_id(&mut self, id: Id) -> &mut Self {
@@ -357,6 +367,8 @@ pub(crate) struct FileInTrash {
 
 impl TaskIn for FileInTrash {
 	type Prog = FileProgTrash;
+
+	fn target(&self) -> Option<UrlBuf> { Some(self.target.clone()) }
 
 	fn id(&self) -> Id { self.id }
 
@@ -380,6 +392,8 @@ pub(crate) struct FileInDownload {
 impl TaskIn for FileInDownload {
 	type Prog = FileProgDownload;
 
+	fn target(&self) -> Option<UrlBuf> { Some(self.target.clone()) }
+
 	fn id(&self) -> Id { self.id }
 
 	fn set_id(&mut self, id: Id) -> &mut Self {
@@ -401,6 +415,8 @@ pub(crate) struct FileInUpload {
 
 impl TaskIn for FileInUpload {
 	type Prog = FileProgUpload;
+
+	fn target(&self) -> Option<UrlBuf> { Some(self.target.clone()) }
 
 	fn id(&self) -> Id { self.id }
 

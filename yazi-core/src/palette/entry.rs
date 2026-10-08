@@ -2,9 +2,9 @@ use std::borrow::Cow;
 
 use hashbrown::HashSet;
 use yazi_config::{KEYMAP, keymap::ChordArc};
-use yazi_shared::{Layer, url::UrlBuf};
+use yazi_shared::{Layer, url::{UrlBuf, UrlLike}};
 
-use super::Setting;
+use super::{Field, Setting};
 use crate::mgr::Recent;
 
 #[derive(Clone, Debug)]
@@ -16,10 +16,13 @@ pub enum Entry {
 	File { url: UrlBuf, label: String, dir: bool },
 	Shell(String),
 	Recent(Recent),
+	Listed(UrlBuf),
+	Field(Field),
 }
 
 /// Every user-facing `mgr` action, so those without a key binding can be run too.
 pub const ACTIONS: &[&str] = &[
+	"archive",
 	"arrow",
 	"back",
 	"bulk_create",
@@ -103,6 +106,8 @@ impl Entry {
 			Self::Run(cmd) | Self::Shell(cmd) => cmd.into(),
 			Self::File { label, .. } => label.into(),
 			Self::Recent(r) => r.url.to_string().into(),
+			Self::Field(f) => f.label().into(),
+			Self::Listed(u) => u.name().map_or_else(|| u.to_string().into(), |n| n.to_string_lossy()),
 		}
 	}
 }

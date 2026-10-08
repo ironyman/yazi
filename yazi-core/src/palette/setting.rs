@@ -383,6 +383,7 @@ static GLOBALS: &[Global] = &[
 	live_bool!(mgr.show_symlink, "Show symlink targets"),
 	live_bool!(mgr.show_icons, "Show file icons"),
 	live_bool!(mgr.show_borders, "Show column borders"),
+	live_bool!(mgr.archive_7z_native, "7z random access and in-place editing"),
 	mouse_event!(CLICK, "click"),
 	mouse_event!(SCROLL, "scroll"),
 	mouse_event!(TOUCH, "touch"),

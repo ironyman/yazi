@@ -8,4 +8,7 @@ pub enum PaletteMode {
 	File,
 	Shell,
 	Recents,
+	Yanked,
+	Marked,
+	Archive,
 }

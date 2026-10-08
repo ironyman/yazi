@@ -47,6 +47,14 @@ function Header:flags()
 	if finder then
 		t[#t + 1] = string.format("find: %s", finder)
 	end
+
+	local staged = fs.archive.summary(cwd)
+	if staged and staged.added + staged.modified + staged.removed > 0 then
+		local state = staged.committing and "committing" or "uncommitted"
+		t[#t + 1] = string.format("%s: +%d ~%d -%d", state, staged.added, staged.modified, staged.removed)
+	elseif staged and staged.committing then
+		t[#t + 1] = "committing"
+	end
 	return #t == 0 and "" or " (" .. table.concat(t, ", ") .. ")"
 end
 

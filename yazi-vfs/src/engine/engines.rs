@@ -5,6 +5,7 @@ use yazi_shared::{path::{DynPath, PathBufDyn}, strand::AsStrand, url::{Url, UrlB
 
 pub(super) enum Engines<'a> {
 	Local(yazi_fs::engine::local::Local<'a>),
+	Archive(super::archive::Archive<'a>),
 	Lua(super::lua::Lua<'a>),
 	Sftp(super::sftp::Sftp<'a>),
 }
@@ -23,6 +24,7 @@ impl<'a> Engine for Engines<'a> {
 	async fn capabilities(&self) -> io::Result<Capabilities> {
 		match self {
 			Self::Local(p) => p.capabilities().await,
+			Self::Archive(p) => p.capabilities().await,
 			Self::Lua(p) => p.capabilities().await,
 			Self::Sftp(p) => p.capabilities().await,
 		}
@@ -59,6 +61,9 @@ impl<'a> Engine for Engines<'a> {
 		Ok(match url.kind() {
 			K::Regular => Self::Me::Local(yazi_fs::engine::local::Local::new(url).await?),
 			K::Sftp => Self::Me::Sftp(super::sftp::Sftp::new(url).await?),
+			K::Mount if super::archive::is_archive(url) => {
+				Self::Me::Archive(super::archive::Archive::new(url).await?)
+			}
 			K::Mount | K::Hub | K::Scope | K::View => Self::Me::Lua(super::lua::Lua::new(url).await?),
 		})
 	}
@@ -66,6 +71,7 @@ impl<'a> Engine for Engines<'a> {
 	async fn read_dir(self) -> io::Result<Self::ReadDir> {
 		Ok(match self {
 			Self::Local(p) => p.read_dir().await?.into(),
+			Self::Archive(p) => p.read_dir().await?.into(),
 			Self::Lua(p) if p.handles(|c| c.read_dir).await? => p.read_dir().await?.into(),
 			Self::Lua(p) => physical!(p, read_dir)?,
 			Self::Sftp(p) => p.read_dir().await?.into(),
@@ -79,6 +85,7 @@ impl<'a> Engine for Engines<'a> {
 	async fn revalidate(&self, file: File) -> io::Result<Option<File>> {
 		match self {
 			Self::Local(p) => p.revalidate(file).await,
+			Self::Archive(p) => p.revalidate(file).await,
 			Self::Lua(p) if p.handles(|c| c.revalidate).await? => p.revalidate(file).await,
 			Self::Lua(p) => physical!(p, revalidate, File { url: file.url.into_physical(), ..file }),
 			Self::Sftp(p) => p.revalidate(file).await,
@@ -131,6 +138,7 @@ impl<'a> Engine for Engines<'a> {
 	fn url(&self) -> Url<'_> {
 		match self {
 			Self::Local(p) => p.url(),
+			Self::Archive(p) => p.url(),
 			Self::Lua(p) => p.url(),
 			Self::Sftp(p) => p.url(),
 		}

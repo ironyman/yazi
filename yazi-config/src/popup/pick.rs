@@ -19,10 +19,12 @@ impl Pick {
 		self.open_offset.height.min(Self::BORDER.saturating_add(len as u16))
 	}
 
-	pub fn open(&self, items: Vec<String>) -> PickCfg {
+	pub fn open(&self, items: Vec<String>) -> PickCfg { self.choose(self.open_title.clone(), items) }
+
+	pub fn choose(&self, title: impl Into<String>, items: Vec<String>) -> PickCfg {
 		let max_height = self.max_height(items.len());
 		PickCfg {
-			title: self.open_title.clone(),
+			title: title.into(),
 			items,
 			position: Position::new(self.open_origin, Offset { height: max_height, ..self.open_offset }),
 		}

@@ -2,7 +2,7 @@ use std::borrow::Cow;
 
 use mlua::{FromLua, Lua, Table, Value};
 use yazi_binding::Scope;
-use yazi_shared::id::Id;
+use yazi_shared::{id::Id, url::UrlBuf};
 use yazi_shim::SStr;
 
 use crate::{TaskIn, custom::{CustomPool, CustomProg}};
@@ -15,10 +15,27 @@ pub struct CustomIn {
 	title:               SStr,
 	pub(crate) track:    bool,
 	pub(crate) progress: bool,
+	target:              Option<UrlBuf>,
+}
+
+impl CustomIn {
+	pub fn new(title: impl Into<SStr>, progress: bool) -> Self {
+		Self { scope: Scope::new(), title: title.into(), progress, ..Default::default() }
+	}
+
+	#[inline]
+	pub fn scope(&self) -> &Scope { &self.scope }
+
+	pub fn with_target(mut self, target: impl Into<UrlBuf>) -> Self {
+		self.target = Some(target.into());
+		self
+	}
 }
 
 impl TaskIn for CustomIn {
 	type Prog = CustomProg;
+
+	fn target(&self) -> Option<UrlBuf> { self.target.clone() }
 
 	fn id(&self) -> Id { self.id }
 

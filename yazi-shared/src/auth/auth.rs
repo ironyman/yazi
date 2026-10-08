@@ -39,7 +39,9 @@ impl Auth {
 	pub fn is_local(&self) -> bool { self.kind.is_regular() || self.view.is_local() }
 
 	#[inline]
-	pub fn is_remote(&self) -> bool { self.kind.is_sftp() || self.view.is_remote() }
+	pub fn is_remote(&self) -> bool {
+		self.kind.is_sftp() || self.kind.is_mount() || self.view.is_remote()
+	}
 
 	#[inline]
 	pub fn physical(&self) -> &Self { self.view.auth().map_or(self, |a| a) }

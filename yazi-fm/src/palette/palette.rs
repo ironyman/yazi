@@ -59,17 +59,23 @@ impl Palette<'_> {
 		let prev = Self::key(|a| a.name == "arrow" && a.first::<&str>().is_ok_and(|s| s == "prev"));
 		let next = Self::key(|a| a.name == "arrow" && a.first::<&str>().is_ok_and(|s| s == "next"));
 		let close = Self::key(|a| a.name == "escape");
+		let unlist = Self::key(|a| a.name == "unlist");
 
 		let (submit_desc, complete_desc, prefixes) = match mode {
 			PaletteMode::Command => ("run", "complete/cycle", "! shell"),
 			PaletteMode::File => ("open", "complete", "> commands  ! shell"),
 			PaletteMode::Shell => ("run", "complete", ""),
 			PaletteMode::Recents => ("go", "complete", "> commands  ! shell"),
+			PaletteMode::Yanked | PaletteMode::Marked => ("reveal", "complete", "> commands  ! shell"),
+			PaletteMode::Archive => ("next/create", "change", ""),
 		};
 
 		let hints = [
 			submit.map(|k| format!("{k} {submit_desc}")),
 			pager.filter(|_| mode == PaletteMode::Shell).map(|k| format!("{k} show output")),
+			unlist
+				.filter(|_| matches!(mode, PaletteMode::Yanked | PaletteMode::Marked))
+				.map(|k| format!("{k} remove")),
 			complete.map(|k| format!("{k} {complete_desc}")),
 			prev.zip(next).map(|(p, n)| format!("{p}/{n} select")),
 			close.map(|k| format!("{k} close")),
@@ -94,6 +100,7 @@ impl Palette<'_> {
 			"<Up>" => "↑".to_owned(),
 			"<Down>" => "↓".to_owned(),
 			"<Esc>" => "esc".to_owned(),
+			k if k.starts_with("<C-") && k.len() == 5 => format!("^{}", &k[3..4]),
 			_ => key,
 		})
 	}

@@ -14,6 +14,7 @@ pub(crate) fn compose() -> Composer<ComposerGet, ComposerSet> {
 	fn get(lua: &Lua, key: &[u8]) -> mlua::Result<Value> {
 		match key {
 			b"access" => access(lua)?,
+			b"archive" => return archive(lua)?.into_lua(lua),
 			b"calc_size" => calc_size(lua)?,
 			b"cha" => stat(lua)?, // TODO: remove
 			b"stat" => stat(lua)?,
@@ -45,6 +46,41 @@ pub(crate) fn compose() -> Composer<ComposerGet, ComposerSet> {
 
 fn access(lua: &Lua) -> mlua::Result<Function> {
 	lua.create_function(|_, ()| Ok(yazi_vfs::engine::Demand::default()))
+}
+
+fn archive(lua: &Lua) -> mlua::Result<Table> {
+	use yazi_vfs::engine::archive::{mount_url, status, summary};
+
+	lua.create_table_from([
+		(
+			"summary",
+			lua.create_function(|lua, url: UrlRef| {
+				let Some(s) = summary(&*url) else { return Ok(Value::Nil) };
+				lua
+					.create_table_from([
+						("added", s.added.into_lua(lua)?),
+						("modified", s.modified.into_lua(lua)?),
+						("removed", s.removed.into_lua(lua)?),
+						("committing", s.committing.into_lua(lua)?),
+					])?
+					.into_lua(lua)
+			})?,
+		),
+		("status", lua.create_function(|_, url: UrlRef| Ok(status(&*url)))?),
+		("mount_url", lua.create_function(|_, url: UrlRef| Ok(url.as_local().and_then(mount_url)))?),
+		(
+			"mount",
+			lua.create_async_function(|lua, (url, password): (UrlRef, Option<String>)| async move {
+				let Some(path) = url.as_local() else {
+					return (Value::Nil, "Not a local archive").into_lua_multi(&lua);
+				};
+				match yazi_vfs::engine::archive::mount(path, password, Box::new(|_, _| ())).await {
+					Ok(locked) => locked.into_lua_multi(&lua),
+					Err(e) => (Value::Nil, Error::from(e)).into_lua_multi(&lua),
+				}
+			})?,
+		),
+	])
 }
 
 fn calc_size(lua: &Lua) -> mlua::Result<Function> {

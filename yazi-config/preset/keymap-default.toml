@@ -46,7 +46,8 @@ keymap = [
 
 	# Toggle
 	{ on = "<Space>", run = [ "toggle", "arrow 1" ], desc = "Toggle the current selection state" },
-	{ on = "<C-a>",   run = "toggle_all --state=on", desc = "Select all files" },
+	{ on = "<C-a>",   run = "toggle_all --state=auto", desc = "Select all files, or deselect all if all are selected" },
+	{ on = "<A-a>",   run = "toggle_all --state=off",  desc = "Deselect all files" },
 	{ on = "<C-r>",   run = "toggle_all",            desc = "Invert selection of all files" },
 
 	# Visual mode
@@ -68,6 +69,7 @@ keymap = [
 	{ on = "e",         run = "plugin edit",                 desc = "Edit selected files in $EDITOR" },
 	{ on = "y",         run = "yank",                        desc = "Yank selected files (copy)" },
 	{ on = "x",         run = "yank --cut",                  desc = "Yank selected files (cut)" },
+	{ on = "<C-y>",     run = "yank --add",                  desc = "Add selected files to the yanked files" },
 	{ on = "p",         run = "paste",                       desc = "Paste yanked files" },
 	{ on = "P",         run = "paste --force",               desc = "Paste yanked files (overwrite if the destination exists)" },
 	{ on = "-",         run = "link",                        desc = "Symlink the absolute path of yanked files" },
@@ -104,6 +106,11 @@ keymap = [
 	{ on = [ "M", "n" ], run = "linemode none",        desc = "Linemode: none" },
 
 	# Copy
+	{ on = [ "U", "c" ], run = "archive commit",  desc = "Commit staged changes to the archive" },
+	{ on = [ "U", "d" ], run = "archive discard", desc = "Discard staged changes to the archive" },
+	{ on = [ "U", "s" ], run = "archive status",  desc = "Show pending changes to the archive" },
+	{ on = [ "U", "a" ], run = "archive create",  desc = "Create an archive" },
+
 	{ on = [ "c", "c" ], run = "copy path",             desc = "Copy file path" },
 	{ on = [ "c", "C" ], run = "copy url",              desc = "Copy file URL" },
 	{ on = [ "c", "d" ], run = "copy dirpath",          desc = "Copy directory path" },
@@ -145,6 +152,8 @@ keymap = [
 	{ on = [ "g", "t" ],       run = "plugin trash",     desc = "Go to trash bin" },
 	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
 	{ on = [ "g", "r" ],       run = "palette recents",  desc = "Go to a recent place" },
+	{ on = [ "g", "y" ],       run = "palette yanked",   desc = "Show yanked files" },
+	{ on = [ "g", "m" ],       run = "palette marked",   desc = "Show marked files" },
 	{ on = [ "g", "f" ],       run = "follow",           desc = "Follow hovered symlink" },
 
 	# Tabs
@@ -193,7 +202,15 @@ keymap = [
 	{ on = "<Down>", run = "arrow next", desc = "Next task" },
 
 	{ on = "<Enter>", run = "inspect", desc = "Inspect the task" },
-	{ on = "x",       run = "cancel",  desc = "Cancel the task" },
+	{ on = "x",       run = "cancel",  desc = "Cancel the task, or remove it from the list if finished" },
+	{ on = "g",       run = "reveal",  desc = "Go to the file of the task" },
+
+	{ on = "<Tab>",   run = "filter next", desc = "Next list: in progress, completed, failed, canceled" },
+	{ on = "<S-Tab>", run = "filter prev", desc = "Previous list" },
+	{ on = "l",       run = "filter next", desc = "Next list" },
+	{ on = "h",       run = "filter prev", desc = "Previous list" },
+	{ on = "<Right>", run = "filter next", desc = "Next list" },
+	{ on = "<Left>",  run = "filter prev", desc = "Previous list" },
 
 	# Help
 	{ on = "~",    run = "help", desc = "Open help" },
@@ -414,6 +431,10 @@ keymap = [
 
 	{ on = "<Tab>",   run = "complete",   desc = "Complete the suggestion, or cycle the setting forward" },
 	{ on = "<S-Tab>", run = "cycle prev", desc = "Cycle the setting backward" },
+	{ on = "<Left>",  run = "nudge prev", desc = "Change the choice backward, or move the cursor back" },
+	{ on = "<Right>", run = "nudge next", desc = "Change the choice forward, or move the cursor forward" },
+
+	{ on = "<C-d>", run = "unlist", desc = "Remove the file from the list (unyank or unmark)" },
 
 	# Navigation
 	{ on = "k", run = "arrow prev", desc = "Previous item" },

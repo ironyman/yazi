@@ -1,12 +1,12 @@
 use anyhow::Result;
 use tokio::{io::{AsyncBufReadExt, BufReader}, select};
 use yazi_config::popup::{Pager, Palette};
-use yazi_core::{mgr::{CdSource, MgrSnap}, notify::{MessageLevel, MessageOpt}, palette::{Entry, SettingKind}};
+use yazi_core::{mgr::{CdSource, MgrSnap}, notify::{MessageLevel, MessageOpt}, palette::{Entry, Field, SettingKind}};
 use yazi_fs::Splatter;
 use yazi_macro::{emit, relay, render, succ};
 use yazi_parser::{ArrowForm, palette::CloseForm};
 use yazi_proxy::{MgrProxy, PickProxy};
-use yazi_scheduler::process::{self, ShellOpt};
+use yazi_scheduler::{NotifyProxy, process::{self, ShellOpt}};
 use yazi_shared::{Layer, data::Data, event::Action, id::Id};
 use yazi_widgets::{Step, input::InputEvent};
 
@@ -20,6 +20,12 @@ impl Actor for Close {
 	const NAME: &str = "close";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		if form.submit
+			&& let Some(&Entry::Field(field)) = cx.palette.hovered()
+		{
+			return Self::field(cx, field);
+		}
+
 		let palette = &mut cx.palette;
 		let entry = palette.hovered().filter(|_| form.submit).cloned();
 
@@ -34,6 +40,8 @@ impl Actor for Close {
 			Some(Entry::File { url, dir: true, .. }) => succ!(MgrProxy::cd(url, CdSource::Cd)),
 			Some(Entry::File { url, dir: false, .. }) => succ!(MgrProxy::reveal(url)),
 			Some(Entry::Recent(r)) => succ!(MgrProxy::cd(r.url, CdSource::Cd)),
+			Some(Entry::Listed(url)) => succ!(MgrProxy::reveal(url)),
+			Some(Entry::Field(_)) => succ!(),
 			Some(Entry::Shell(cmd)) if form.pager => {
 				cx.input.histories.remember("shell", &cmd);
 				succ!(Self::page(cx, cmd))
@@ -71,6 +79,25 @@ impl Actor for Close {
 }
 
 impl Close {
+	/// Submitting a form field cycles a choice, moves on from a text field, or creates the archive.
+	fn field(cx: &mut Ctx, field: Field) -> Result<Data> {
+		match field {
+			Field::Create => match crate::mgr::Archive::submit(&cx.palette.draft) {
+				Ok((output, inputs, volume, password)) => {
+					cx.palette.close();
+					tokio::spawn(crate::mgr::Archive::create(output, inputs, volume, password));
+					succ!(render!());
+				}
+				Err(e) => succ!(NotifyProxy::push_warn("Create archive", e)),
+			},
+			f if f.is_choice() => {
+				cx.palette.draft.cycle(f, 1);
+				succ!(cx.palette.filter_apply())
+			}
+			_ => act!(palette:arrow, cx, ArrowForm { step: Step::Next }),
+		}
+	}
+
 	fn run(cx: &mut Ctx, cmd: &str) -> Result<Data> {
 		match cmd.parse::<Action>() {
 			Ok(mut action) => {

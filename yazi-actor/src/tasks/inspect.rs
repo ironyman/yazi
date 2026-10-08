@@ -22,7 +22,7 @@ impl Actor for Inspect {
 
 	fn act(cx: &mut Ctx, _: Self::Form) -> Result<Data> {
 		let ongoing = cx.tasks.scheduler.ongoing.clone();
-		let Some(id) = ongoing.lock().get_id(cx.tasks.cursor) else {
+		let Some(id) = ongoing.lock().get_id(cx.tasks.filter, cx.tasks.cursor) else {
 			succ!();
 		};
 

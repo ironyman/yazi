@@ -1,7 +1,7 @@
 use std::{sync::Arc, time::Duration};
 
 use tokio::{task::JoinHandle, time::sleep};
-use yazi_scheduler::{Scheduler, TaskSnap, TaskSummary};
+use yazi_scheduler::{Scheduler, TaskFilter, TaskSnap, TaskSummary};
 use yazi_term::TERM;
 
 use super::{TASKS_BORDER, TASKS_PADDING, TASKS_PERCENT};
@@ -13,7 +13,10 @@ pub struct Tasks {
 
 	pub visible: bool,
 	pub cursor:  usize,
+	pub filter:  TaskFilter,
 	pub snaps:   Vec<TaskSnap>,
+	/// How many tasks each filter lists, in the order of `TaskFilter::ALL`.
+	pub counts:  [usize; 4],
 	pub summary: TaskSummary,
 }
 
@@ -41,7 +44,9 @@ impl Tasks {
 
 			visible: false,
 			cursor: 0,
+			filter: Default::default(),
 			snaps: Default::default(),
+			counts: Default::default(),
 			summary: Default::default(),
 		}
 	}
@@ -57,7 +62,15 @@ impl Tasks {
 			/ 3
 	}
 
-	pub fn paginate(&self) -> Vec<TaskSnap> {
-		self.scheduler.ongoing.lock().values().take(Self::limit()).map(Into::into).collect()
+	/// Re-reads the listed tasks and the counts per filter, returning whether they changed.
+	pub fn refresh(&mut self) -> bool {
+		let ongoing = self.scheduler.ongoing.lock();
+		let snaps: Vec<_> = ongoing.view(self.filter).take(Self::limit()).map(Into::into).collect();
+		let counts = TaskFilter::ALL.map(|f| ongoing.view(f).count());
+		drop(ongoing);
+
+		let changed = self.snaps != snaps || self.counts != counts;
+		(self.snaps, self.counts) = (snaps, counts);
+		changed
 	}
 }

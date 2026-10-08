@@ -6,6 +6,9 @@ use yazi_shared::event::ActionCow;
 pub struct YankForm {
 	#[serde(default)]
 	pub cut: bool,
+	/// Adds to the yanked files rather than replacing them, keeping their copy/cut mode.
+	#[serde(default)]
+	pub add: bool,
 }
 
 impl TryFrom<ActionCow> for YankForm {

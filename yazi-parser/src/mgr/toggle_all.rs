@@ -6,6 +6,8 @@ use yazi_shared::event::ActionCow;
 pub struct ToggleAllForm {
 	pub files: Vec<File>,
 	pub state: Option<bool>,
+	/// Marks all, or unmarks all if every file is already marked.
+	pub auto:  bool,
 }
 
 impl From<ActionCow> for ToggleAllForm {
@@ -17,12 +19,13 @@ impl From<ActionCow> for ToggleAllForm {
 				Ok("off") => Some(false),
 				_ => None,
 			},
+			auto:  a.get("state").is_ok_and(|s: &str| s == "auto"),
 		}
 	}
 }
 
 impl From<Option<bool>> for ToggleAllForm {
-	fn from(state: Option<bool>) -> Self { Self { files: vec![], state } }
+	fn from(state: Option<bool>) -> Self { Self { files: vec![], state, auto: false } }
 }
 
 impl FromLua for ToggleAllForm {

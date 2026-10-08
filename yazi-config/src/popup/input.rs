@@ -116,6 +116,24 @@ impl Input {
 		}
 	}
 
+	pub fn password(&self, name: &str) -> InputOpt {
+		InputOpt { obscure: true, ..self.ask("password", format!("Password for {name}:")) }
+	}
+
+	pub fn ask(&self, name: &str, title: impl Into<String>) -> InputOpt {
+		InputOpt {
+			name: name.to_owned(),
+			title: title.into(),
+			position: Position::new(Origin::TopCenter, Offset {
+				x:      0,
+				y:      2,
+				width:  60,
+				height: 3,
+			}),
+			..Default::default()
+		}
+	}
+
 	pub fn tab_rename(&self) -> InputOpt {
 		InputOpt {
 			name: "tab-rename".to_owned(),

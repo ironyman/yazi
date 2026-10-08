@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use anyhow::Result;
 use ratatui_core::layout::Margin;
 use yazi_config::popup::Palette;
+use yazi_core::palette::PaletteMode;
 use yazi_macro::{render, succ};
 use yazi_parser::palette::ShowForm;
 use yazi_shared::{data::Data, url::UrlLike};
@@ -25,6 +26,12 @@ impl Actor for Show {
 		let cwd = cx.cwd().as_local().map(PathBuf::from);
 		let history = cx.input.histories.get("shell").to_vec();
 		let recents = cx.mgr.recents.iter().cloned().collect();
+		let listed = match form.mode {
+			PaletteMode::Yanked => cx.mgr.yanked.urls().cloned().collect(),
+			PaletteMode::Marked => cx.tab().selected.files().map(|f| f.url.clone()).collect(),
+			_ => vec![],
+		};
+		let cut = cx.mgr.yanked.cut;
 
 		let palette = &mut cx.palette;
 		palette.close();
@@ -34,6 +41,8 @@ impl Actor for Show {
 		palette.height = area.height;
 		palette.history = history;
 		palette.recents = recents;
+		palette.listed = listed;
+		palette.cut = cut;
 		palette.cwd = cwd;
 
 		palette.input = Input::default();

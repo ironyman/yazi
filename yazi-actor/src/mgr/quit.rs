@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{path::PathBuf, time::Duration};
 
 use anyhow::Result;
 use tokio::{select, time};
@@ -8,6 +8,7 @@ use yazi_macro::succ;
 use yazi_parser::{app::QuitForm, spark::SparkKind};
 use yazi_proxy::{AppProxy, ConfirmProxy};
 use yazi_shared::{data::Data, strand::{Strand, StrandLike, ToStrandJoin}, url::AsUrl};
+use yazi_vfs::engine::archive::Summary;
 
 use crate::{Actor, Ctx, act};
 
@@ -25,8 +26,11 @@ impl Actor for Quit {
 			(ongoing.len(), ongoing.values().take(11).map(|t| t.title.clone()).collect())
 		};
 
-		if left == 0 {
+		let staged = yazi_vfs::engine::archive::dirty();
+		if left == 0 && staged.is_empty() {
 			return act!(app:quit, cx, opt);
+		} else if !staged.is_empty() {
+			return Self::confirm_staged(staged, left_titles, opt);
 		}
 
 		tokio::spawn(async move {
@@ -64,6 +68,34 @@ impl Actor for Quit {
 }
 
 impl Quit {
+	/// Staged archive changes live only in this process, so unlike tasks, they
+	/// never resolve themselves and quitting always waits for the answer.
+	fn confirm_staged(
+		staged: Vec<(PathBuf, Summary)>,
+		tasks: Vec<String>,
+		opt: QuitOpt,
+	) -> Result<Data> {
+		let archives = staged
+			.into_iter()
+			.map(|(path, s)| {
+				let state = if s.committing {
+					"commit in progress".to_owned()
+				} else {
+					format!("+{} ~{} -{}", s.added, s.modified, s.removed)
+				};
+				format!("{} ({state})", path.display())
+			})
+			.collect();
+
+		let token = ConfirmProxy::show_sync(ConfirmCfg::quit_staged(archives, tasks));
+		tokio::spawn(async move {
+			if token.future().await {
+				AppProxy::quit(opt);
+			}
+		});
+		succ!();
+	}
+
 	pub(super) fn with_selected<I>(selected: I)
 	where
 		I: IntoIterator,

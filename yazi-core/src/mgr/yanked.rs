@@ -31,6 +31,16 @@ impl Yanked {
 
 	pub fn urls(&self) -> impl Iterator<Item = &UrlBuf> { self.files.iter().map(|f| &f.url) }
 
+	/// Adds files, keeping the existing ones and their order.
+	pub fn extend<I>(&mut self, files: I)
+	where
+		I: IntoIterator<Item = FileCov>,
+	{
+		let old = self.files.len();
+		self.files.extend(files);
+		self.revision += (old != self.files.len()) as u64;
+	}
+
 	pub fn remove_many<'a, I, T>(&mut self, urls: I)
 	where
 		I: IntoIterator<Item = T>,

@@ -4,12 +4,17 @@ use yazi_fs::engine::DirReader;
 
 pub enum ReadDir {
 	Local(yazi_fs::engine::local::ReadDir),
+	Archive(super::archive::ReadDir),
 	Lua(super::lua::ReadDir),
 	Sftp(super::sftp::ReadDir),
 }
 
 impl From<yazi_fs::engine::local::ReadDir> for ReadDir {
 	fn from(reader: yazi_fs::engine::local::ReadDir) -> Self { Self::Local(reader) }
+}
+
+impl From<super::archive::ReadDir> for ReadDir {
+	fn from(reader: super::archive::ReadDir) -> Self { Self::Archive(reader) }
 }
 
 impl From<super::lua::ReadDir> for ReadDir {
@@ -26,6 +31,7 @@ impl DirReader for ReadDir {
 	async fn next(&mut self) -> io::Result<Option<Self::Entry>> {
 		Ok(match self {
 			Self::Local(reader) => reader.next().await?.map(Self::Entry::Local),
+			Self::Archive(reader) => reader.next().await?.map(Self::Entry::Archive),
 			Self::Lua(reader) => reader.next().await?.map(Self::Entry::Lua),
 			Self::Sftp(reader) => reader.next().await?.map(Self::Entry::Sftp),
 		})

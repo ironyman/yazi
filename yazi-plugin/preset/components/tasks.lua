@@ -22,6 +22,18 @@ end
 function Tasks:reflow() return { self } end
 
 function Tasks:redraw()
+	if #cx.tasks.snaps == 0 then
+		local empty = {
+			running = "No tasks in progress",
+			completed = "No completed tasks",
+			failed = "No failed tasks",
+			canceled = "No canceled tasks",
+		}
+		return {
+			ui.Line(empty[cx.tasks.filter] or "No tasks"):fg("gray"):align(ui.Align.CENTER):area(self._area { h = 1 }),
+		}
+	end
+
 	local elements = {}
 	for i, snap in ipairs(cx.tasks.snaps) do
 		local y = self._area.y + (i - 1) * 3
@@ -93,7 +105,12 @@ function Tasks:progress(snap)
 end
 
 function Tasks:status(snap)
-	if snap.running then
+	local filter = cx.tasks.filter
+	if filter == "completed" then
+		return "Completed"
+	elseif filter == "canceled" then
+		return "Canceled, press Enter to view log…"
+	elseif snap.running then
 		return snap.cooked and "Cleaning…" or "Running…"
 	else
 		return "Failed, press Enter to view log…"

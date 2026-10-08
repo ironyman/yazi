@@ -7,6 +7,7 @@ Entity = {
 		{ "highlights", id = 4, order = 4000 },
 		{ "found", id = 5, order = 5000 },
 		{ "symlink", id = 6, order = 6000 },
+		{ "staged", id = 7, order = 7000 },
 	},
 }
 
@@ -90,6 +91,18 @@ function Entity:symlink()
 
 	local to = self._file.link_to
 	return to and ui.Span(string.format(" -> %s", to)):style(th.mgr.symlink_target) or ""
+end
+
+function Entity:staged()
+	local status = fs.archive.status(self._file.url)
+	if status == "added" then
+		return ui.Span(" [+]"):fg("green")
+	elseif status == "modified" then
+		return ui.Span(" [~]"):fg("yellow")
+	elseif status == "moved" then
+		return ui.Span(" [>]"):fg("cyan")
+	end
+	return ""
 end
 
 function Entity:redraw()

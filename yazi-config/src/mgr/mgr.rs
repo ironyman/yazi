@@ -28,6 +28,9 @@ pub struct Mgr {
 	pub show_borders: SyncCell<bool>,
 	pub scrolloff:    SyncCell<u8>,
 	pub mouse_events: SyncCell<MouseEvents>,
+
+	// Archive
+	pub archive_7z_native: SyncCell<bool>,
 }
 
 fn deserialize_linemode<'de, D>(deserializer: D) -> Result<ArcSwap<String>, D::Error>
