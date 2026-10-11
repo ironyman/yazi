@@ -27,6 +27,7 @@ pub enum Spark<'a> {
 	AppStop(crate::app::StopForm),
 	AppTheme(crate::VoidForm),
 	AppTitle(crate::app::TitleForm),
+	AppUpdateMeters(crate::app::UpdateMetersForm),
 	AppUpdateProgress(crate::app::UpdateProgressForm),
 
 	// Mgr
@@ -247,6 +248,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::AppStop(b) => b.into_lua(lua),
 			Self::AppTheme(b) => b.into_lua(lua),
 			Self::AppTitle(b) => b.into_lua(lua),
+			Self::AppUpdateMeters(b) => b.into_lua(lua),
 			Self::AppUpdateProgress(b) => b.into_lua(lua),
 
 			// Mgr
@@ -441,6 +443,7 @@ try_from_spark!(yazi_term::event::Report, app:report);
 try_from_spark!(crate::app::ReflowForm, app:reflow, app:resize, app:resume);
 try_from_spark!(crate::app::StopForm, app:stop);
 try_from_spark!(crate::app::TitleForm, app:title);
+try_from_spark!(crate::app::UpdateMetersForm, app:update_meters);
 try_from_spark!(crate::app::UpdateProgressForm, app:update_progress);
 try_from_spark!(crate::cmp::CloseForm, cmp:close);
 try_from_spark!(crate::cmp::ShowForm, cmp:show);

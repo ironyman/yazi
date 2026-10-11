@@ -20,6 +20,7 @@ impl Actor for Complete {
 		let palette = &mut cx.palette;
 		let value = match palette.hovered() {
 			None => succ!(),
+			Some(Entry::Meters) => succ!(),
 			Some(Entry::Setting(_)) => return act!(palette:cycle, cx, ArrowForm { step: Step::Next }),
 			Some(Entry::Chord(c)) => c.desc_or_run().into_owned(),
 			Some(Entry::Action(a)) => format!("{a} "),

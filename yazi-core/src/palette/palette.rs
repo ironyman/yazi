@@ -10,7 +10,7 @@ use yazi_term::event::KeyEvent;
 use yazi_tty::sequence::SetCursorStyle;
 use yazi_widgets::{Scrollable, input::Input};
 
-use super::{Draft, Entry, Field, PaletteFiles, PaletteMode, Search, fuzzy};
+use super::{Draft, Entry, Field, PaletteFiles, PaletteMode, Search, Setting, fuzzy};
 use crate::mgr::Recent;
 
 #[derive(Default)]
@@ -45,7 +45,8 @@ pub struct Palette {
 
 impl Palette {
 	pub fn r#type(&mut self, key: &KeyEvent) -> Result<bool> {
-		if !self.input.r#type(key)? {
+		// Nothing to type on the meters page, so keys go to the keymap
+		if self.mode == PaletteMode::Meters || !self.input.r#type(key)? {
 			return Ok(false);
 		}
 
@@ -155,7 +156,7 @@ impl Palette {
 	/// The effective mode, after applying any `!` or `>` prefix, and the query without it.
 	pub fn view(&self) -> (PaletteMode, &str) {
 		let kw = self.keyword.as_str();
-		if self.mode == PaletteMode::Archive {
+		if matches!(self.mode, PaletteMode::Archive | PaletteMode::Meters) {
 			(self.mode, kw)
 		} else if let Some(q) = kw.strip_prefix('!') {
 			(PaletteMode::Shell, q)
@@ -179,6 +180,7 @@ impl Palette {
 			(PaletteMode::Recents, q) => Self::recents(q.trim(), &self.recents),
 			(PaletteMode::Yanked | PaletteMode::Marked, q) => Self::listed(q.trim(), &self.listed),
 			(PaletteMode::Archive, _) => self.draft.fields().into_iter().map(Entry::Field).collect(),
+			(PaletteMode::Meters, _) => Setting::meters().map(Entry::Setting).collect(),
 		}
 	}
 
@@ -231,6 +233,7 @@ impl Palette {
 			PaletteMode::Yanked => "Yanked Files (copied)",
 			PaletteMode::Marked => "Marked Files",
 			PaletteMode::Archive => "Create Archive",
+			PaletteMode::Meters => "System Meters",
 		}
 	}
 

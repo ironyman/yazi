@@ -4,7 +4,7 @@ use hashbrown::HashSet;
 use yazi_config::{KEYMAP, keymap::ChordArc};
 use yazi_shared::{Layer, url::{UrlBuf, UrlLike}};
 
-use super::{Field, Setting};
+use super::{Field, Setting, SettingKind};
 use crate::mgr::Recent;
 
 #[derive(Clone, Debug)]
@@ -18,6 +18,8 @@ pub enum Entry {
 	Recent(Recent),
 	Listed(UrlBuf),
 	Field(Field),
+	/// Opens the system meters page.
+	Meters,
 }
 
 /// Every user-facing `mgr` action, so those without a key binding can be run too.
@@ -89,8 +91,11 @@ impl Entry {
 			.collect();
 
 		let lowercased = kw.to_lowercase();
+		let toggles = Setting::meters().filter(|s| matches!(s.kind(), SettingKind::Toggle));
 		let matched = Setting::all()
 			.map(Self::Setting)
+			.chain([Self::Meters])
+			.chain(toggles.map(Self::Setting))
 			.chain(chords)
 			.chain(ACTIONS.iter().map(|&a| Self::Action(a)))
 			.filter(|e| e.label().to_lowercase().contains(&lowercased));
@@ -107,6 +112,7 @@ impl Entry {
 			Self::File { label, .. } => label.into(),
 			Self::Recent(r) => r.url.to_string().into(),
 			Self::Field(f) => f.label().into(),
+			Self::Meters => "Settings: Configure system meters".into(),
 			Self::Listed(u) => u.name().map_or_else(|| u.to_string().into(), |n| n.to_string_lossy()),
 		}
 	}

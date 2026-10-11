@@ -49,6 +49,7 @@ impl<'a> Executor<'a> {
 		on!(accept_payload);
 		on!(plugin);
 		on!(plugin_do);
+		on!(update_meters);
 		on!(update_progress);
 		on!(lua);
 		on!(deprecate);

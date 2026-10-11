@@ -90,6 +90,8 @@ impl Widget for Entries<'_> {
 				}
 				Entry::Chord(c) => ListItem::new(Line::from(c.on()).alignment(Alignment::Right))
 					.style(THEME.palette.chord.get()),
+				Entry::Meters => ListItem::new(Line::from("page").alignment(Alignment::Right))
+					.style(THEME.palette.chord.get()),
 				Entry::Action(_) => ListItem::new(Line::from("action").alignment(Alignment::Right))
 					.style(THEME.palette.chord.get()),
 				Entry::Run(_) => ListItem::new(Line::from("run").alignment(Alignment::Right))

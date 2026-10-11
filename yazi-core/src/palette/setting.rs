@@ -5,12 +5,12 @@ use hashbrown::HashMap;
 use parking_lot::Mutex;
 use strum::VariantNames;
 use toml_edit::{Array, InlineTable, Value};
-use yazi_config::{THEME, YAZI, Yazi, mgr::{MgrRatio, MouseEvents}, theme::Theme};
+use yazi_config::{THEME, YAZI, Yazi, mgr::{Meter, MeterLabels, MeterStyle, MgrRatio, MouseEvents}, theme::Theme};
 use yazi_fs::{SortBy, SortFallback};
 use yazi_macro::{emit, relay};
 use yazi_shim::strum::IntoStr;
 
-use crate::{notify::{MessageLevel, MessageOpt}, tab::Preference};
+use crate::{meter::Meters, notify::{MessageLevel, MessageOpt}, tab::Preference};
 
 /// Values saved for settings that only apply after a restart, keyed by name.
 static PENDING: LazyLock<Mutex<HashMap<&'static str, String>>> = LazyLock::new(Default::default);
@@ -71,6 +71,9 @@ impl Setting {
 		.into_iter()
 		.chain(GLOBALS.iter().map(Self::Global))
 	}
+
+	/// The settings on the system meters page.
+	pub fn meters() -> impl Iterator<Item = Self> { METERS.iter().map(Self::Global) }
 
 	pub fn name(self) -> &'static str {
 		match self {
@@ -291,6 +294,21 @@ fn mouse(flag: MouseEvents, input: &str) -> Result<Value> {
 	Ok(Value::Array(Array::from_iter(Vec::<String>::from(events))))
 }
 
+/// Turns a system meter on or off, keeping them in their usual order.
+fn meter(meter: Meter, input: &str) -> Result<Value> {
+	let mut meters = YAZI.mgr.system_meters.load().to_vec();
+	meters.retain(|&m| m != meter);
+	if parse_toggle(input)? {
+		meters.push(meter);
+		meters.sort();
+	}
+
+	let value = Value::Array(meters.iter().map(|&m| m.into_str()).collect());
+	YAZI.mgr.system_meters.store(Arc::new(meters));
+	Meters::wake();
+	Ok(value)
+}
+
 macro_rules! restart_int {
 	($table:ident. $key:ident : $ty:ty, $name:literal) => {
 		Global {
@@ -332,6 +350,20 @@ macro_rules! live_bool {
 				YAZI.$table.$key.set(parse_toggle(s)?);
 				Ok(Value::from(YAZI.$table.$key.get()))
 			},
+		}
+	};
+}
+
+macro_rules! system_meter {
+	($meter:ident, $name:literal) => {
+		Global {
+			table: "mgr",
+			key:   "system_meters",
+			name:  concat!("Settings: System meter: ", $name),
+			kind:  SettingKind::Toggle,
+			live:  true,
+			get:   || toggle(YAZI.mgr.system_meters.load().contains(&Meter::$meter)).to_owned(),
+			set:   |s| meter(Meter::$meter, s),
 		}
 	};
 }
@@ -485,4 +517,36 @@ static GLOBALS: &[Global] = &[
 	restart_bool!(which.sort_sensitive, "Which-key sort case-sensitive"),
 	restart_bool!(which.sort_reverse, "Which-key sort in reverse"),
 	restart_bool!(which.sort_translit, "Which-key sort translit"),
+];
+
+/// The settings on the system meters page.
+static METERS: &[Global] = &[
+	system_meter!(Cpu, "CPU"),
+	system_meter!(Ram, "RAM"),
+	system_meter!(Disk, "Disk"),
+	system_meter!(Net, "Network"),
+	Global {
+		table: "mgr",
+		key:   "system_meters_style",
+		name:  "Settings: System meters style",
+		kind:  SettingKind::Select(MeterStyle::VARIANTS),
+		live:  true,
+		get:   || YAZI.mgr.system_meters_style.get().into_str().to_owned(),
+		set:   |s| {
+			YAZI.mgr.system_meters_style.set(s.parse()?);
+			Ok(Value::from(s))
+		},
+	},
+	Global {
+		table: "mgr",
+		key:   "system_meters_labels",
+		name:  "Settings: System meters labels",
+		kind:  SettingKind::Select(MeterLabels::VARIANTS),
+		live:  true,
+		get:   || YAZI.mgr.system_meters_labels.get().into_str().to_owned(),
+		set:   |s| {
+			YAZI.mgr.system_meters_labels.set(s.parse()?);
+			Ok(Value::from(s))
+		},
+	},
 ];

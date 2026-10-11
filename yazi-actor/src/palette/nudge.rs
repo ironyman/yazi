@@ -1,5 +1,5 @@
 use anyhow::Result;
-use yazi_core::palette::Entry;
+use yazi_core::palette::{Entry, PaletteMode};
 use yazi_macro::succ;
 use yazi_parser::ArrowForm;
 use yazi_shared::{data::Data, event::Action};
@@ -18,6 +18,8 @@ impl Actor for Nudge {
 		if let Some(&Entry::Field(f)) = cx.palette.hovered()
 			&& f.is_choice()
 		{
+			return act!(palette:cycle, cx, form);
+		} else if cx.palette.mode == PaletteMode::Meters {
 			return act!(palette:cycle, cx, form);
 		}
 

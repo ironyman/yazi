@@ -5,7 +5,7 @@ use yazi_codegen::{DeserializeOver, DeserializeOver2};
 use yazi_fs::{SortBy, SortFallback};
 use yazi_shim::{arc_swap::IntoPointee, cell::SyncCell};
 
-use super::{MgrRatio, MouseEvents};
+use super::{Meter, MeterLabels, MeterStyle, MgrRatio, MouseEvents};
 
 #[derive(Debug, Deserialize, DeserializeOver, DeserializeOver2)]
 pub struct Mgr {
@@ -28,6 +28,11 @@ pub struct Mgr {
 	pub show_borders: SyncCell<bool>,
 	pub scrolloff:    SyncCell<u8>,
 	pub mouse_events: SyncCell<MouseEvents>,
+
+	// Meters
+	pub system_meters:        ArcSwap<Vec<Meter>>,
+	pub system_meters_style:  SyncCell<MeterStyle>,
+	pub system_meters_labels: SyncCell<MeterLabels>,
 
 	// Archive
 	pub archive_7z_native: SyncCell<bool>,

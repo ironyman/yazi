@@ -433,6 +433,7 @@ keymap = [
 	{ on = "<S-Tab>", run = "cycle prev", desc = "Cycle the setting backward" },
 	{ on = "<Left>",  run = "nudge prev", desc = "Change the choice backward, or move the cursor back" },
 	{ on = "<Right>", run = "nudge next", desc = "Change the choice forward, or move the cursor forward" },
+	{ on = "<Space>", run = "cycle next", desc = "Change the setting, on the system meters page" },
 
 	{ on = "<C-d>", run = "unlist", desc = "Remove the file from the list (unyank or unmark)" },
 

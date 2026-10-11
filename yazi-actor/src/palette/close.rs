@@ -1,10 +1,10 @@
 use anyhow::Result;
 use tokio::{io::{AsyncBufReadExt, BufReader}, select};
 use yazi_config::popup::{Pager, Palette};
-use yazi_core::{mgr::{CdSource, MgrSnap}, notify::{MessageLevel, MessageOpt}, palette::{Entry, Field, SettingKind}};
+use yazi_core::{mgr::{CdSource, MgrSnap}, notify::{MessageLevel, MessageOpt}, palette::{Entry, Field, PaletteMode, SettingKind}};
 use yazi_fs::Splatter;
 use yazi_macro::{emit, relay, render, succ};
-use yazi_parser::{ArrowForm, palette::CloseForm};
+use yazi_parser::{ArrowForm, palette::{CloseForm, ShowForm}};
 use yazi_proxy::{MgrProxy, PickProxy};
 use yazi_scheduler::{NotifyProxy, process::{self, ShellOpt}};
 use yazi_shared::{Layer, data::Data, event::Action, id::Id};
@@ -26,6 +26,14 @@ impl Actor for Close {
 			return Self::field(cx, field);
 		}
 
+		// Settings on the meters page change in place, keeping the page open
+		if form.submit
+			&& cx.palette.mode == PaletteMode::Meters
+			&& let Some(Entry::Setting(_)) = cx.palette.hovered()
+		{
+			return act!(palette:cycle, cx, ArrowForm { step: Step::Next });
+		}
+
 		let palette = &mut cx.palette;
 		let entry = palette.hovered().filter(|_| form.submit).cloned();
 
@@ -42,6 +50,7 @@ impl Actor for Close {
 			Some(Entry::Recent(r)) => succ!(MgrProxy::cd(r.url, CdSource::Cd)),
 			Some(Entry::Listed(url)) => succ!(MgrProxy::reveal(url)),
 			Some(Entry::Field(_)) => succ!(),
+			Some(Entry::Meters) => return act!(palette:show, cx, ShowForm { mode: PaletteMode::Meters }),
 			Some(Entry::Shell(cmd)) if form.pager => {
 				cx.input.histories.remember("shell", &cmd);
 				succ!(Self::page(cx, cmd))

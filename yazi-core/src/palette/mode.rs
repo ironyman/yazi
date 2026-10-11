@@ -11,4 +11,5 @@ pub enum PaletteMode {
 	Yanked,
 	Marked,
 	Archive,
+	Meters,
 }

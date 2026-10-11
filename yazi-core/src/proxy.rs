@@ -8,7 +8,7 @@ use yazi_shared::url::AsUrl;
 use yazi_shim::fs::Error;
 use yazi_widgets::Renderable;
 
-use crate::{app::PluginOpt, tab::PreviewLock};
+use crate::{app::PluginOpt, meter::MeterStats, tab::PreviewLock};
 
 pub struct AppProxy;
 
@@ -27,6 +27,10 @@ impl AppProxy {
 
 	pub(crate) fn update_progress(summary: TaskSummary) {
 		emit!(Call(relay!(app:update_progress).with_any("summary", summary)));
+	}
+
+	pub(crate) fn update_meters(stats: MeterStats) {
+		emit!(Call(relay!(app:update_meters).with_any("stats", stats)));
 	}
 }
 

@@ -18,5 +18,6 @@ yazi_macro::mod_flat!(
 	stop
 	theme
 	title
+	update_meters
 	update_progress
 );

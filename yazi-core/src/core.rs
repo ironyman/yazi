@@ -3,11 +3,12 @@ use yazi_shared::Layer;
 use yazi_shim::ratatui::Padable;
 use yazi_tty::sequence::SetCursorStyle;
 
-use crate::{cmp::Cmp, confirm::Confirm, help::Help, input::{Input, InputGuard, InputHistories}, mgr::Mgr, notify::Notify, pager::Pager, palette::Palette, pick::Pick, tab::Tab, tasks::Tasks, which::Which};
+use crate::{cmp::Cmp, confirm::Confirm, help::Help, input::{Input, InputGuard, InputHistories}, meter::Meters, mgr::Mgr, notify::Notify, pager::Pager, palette::Palette, pick::Pick, tab::Tab, tasks::Tasks, which::Which};
 
 pub struct Core {
 	pub mgr:     Mgr,
 	pub tasks:   Tasks,
+	pub meters:  Meters,
 	pub pick:    Pick,
 	pub input:   Input,
 	pub confirm: Confirm,
@@ -24,6 +25,7 @@ impl Core {
 		Self {
 			mgr:     Mgr::make(),
 			tasks:   Tasks::serve(),
+			meters:  Meters::serve(),
 			pick:    Default::default(),
 			input:   Input { histories: InputHistories::load(), ..Default::default() },
 			confirm: Default::default(),

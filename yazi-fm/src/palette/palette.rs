@@ -68,6 +68,7 @@ impl Palette<'_> {
 			PaletteMode::Recents => ("go", "complete", "> commands  ! shell"),
 			PaletteMode::Yanked | PaletteMode::Marked => ("reveal", "complete", "> commands  ! shell"),
 			PaletteMode::Archive => ("next/create", "change", ""),
+			PaletteMode::Meters => ("change", "change", "saved as changed"),
 		};
 
 		let hints = [

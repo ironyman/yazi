@@ -19,6 +19,13 @@ show_borders   = true
 scrolloff      = 5
 mouse_events   = [ "click", "scroll", "drag" ]
 
+# System resource meters shown in the header, in order: any of "cpu", "ram", "disk" and "net"
+system_meters        = []
+# How they are drawn: "bars" (c ▅), "braille" (the last two samples, c ⣰) or "text" (c  42%)
+system_meters_style  = "bars"
+# What they are labelled with: "letters" (c m d n), "ascii" (CPU RAM DSK NET), "emoji" (▣ ▤ ▮ ⇅) or "none"
+system_meters_labels = "letters"
+
 # Read 7z archives by random access and commit changes with zesven's archive editor,
 # instead of the streaming enumerate-and-rewrite used for other formats
 archive_7z_native = false
