@@ -19,8 +19,9 @@ impl Actor for Reveal {
 		// Cd to the trail directory
 		act!(mgr:cd, cx, (trail, form.source))?;
 
-		// Try to hover over the child file
+		// Try to hover over the child file, and keep tracing it until it's loaded
 		let tab = cx.tab_mut();
+		tab.current.trace = Some(child.into());
 		render!(tab.current.hover(child));
 
 		// If the child is not hovered, which means it doesn't exist,

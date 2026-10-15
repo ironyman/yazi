@@ -150,8 +150,9 @@ impl Folder {
 			return self.arrow(0);
 		}
 
-		let new = self.entries.position(key).unwrap_or(self.cursor) as isize;
-		let b = self.arrow(new - self.cursor as isize);
+		// Keep the trace on a miss, so the key is hovered once it's loaded
+		let Some(new) = self.entries.position(key) else { return self.arrow(0) };
+		let b = self.arrow(new as isize - self.cursor as isize);
 
 		self.retrace();
 		b
