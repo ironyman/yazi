@@ -1,10 +1,11 @@
 use anyhow::Result;
 use yazi_core::input::InputMutGuard;
 use yazi_macro::succ;
-use yazi_parser::input::RecallForm;
+use yazi_parser::{input::RecallForm, mgr::FindArrowForm};
 use yazi_shared::data::Data;
+use yazi_widgets::Step;
 
-use crate::{Actor, Ctx};
+use crate::{Actor, Ctx, act};
 
 pub struct Recall;
 
@@ -14,6 +15,11 @@ impl Actor for Recall {
 	const NAME: &str = "recall";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
+		if form.found && cx.input.main.visible && cx.input.main.name == "find" {
+			let prev = matches!(form.step, Step::Prev | Step::Offset(..0));
+			return act!(mgr:find_arrow, cx, FindArrowForm { prev });
+		}
+
 		let Some(input) = cx.input.lock_mut() else {
 			succ!();
 		};

@@ -6,7 +6,9 @@ use yazi_widgets::Step;
 #[derive(Clone, Copy, Debug, Deserialize)]
 pub struct RecallForm {
 	#[serde(alias = "0")]
-	pub step: Step,
+	pub step:  Step,
+	#[serde(default)]
+	pub found: bool,
 }
 
 impl TryFrom<ActionCow> for RecallForm {

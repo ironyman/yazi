@@ -39,6 +39,7 @@ yazi_macro::mod_flat!(
 	reveal
 	seek
 	shell
+	smart_enter
 	sort
 	spot
 	stash

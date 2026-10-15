@@ -1,5 +1,5 @@
 use anyhow::Result;
-use yazi_core::{mgr::OpenOpt, tab::Finder};
+use yazi_core::tab::Finder;
 use yazi_macro::{render, succ};
 use yazi_parser::mgr::FindDoForm;
 use yazi_shared::data::Data;
@@ -43,10 +43,6 @@ impl Actor for FindDo {
 		}
 
 		act!(mgr:escape_find, cx)?;
-		if cx.hovered().is_some_and(|h| h.is_dir()) {
-			act!(mgr:enter, cx)
-		} else {
-			act!(mgr:open, cx, OpenOpt { hovered: true, ..Default::default() })
-		}
+		act!(mgr:smart_enter, cx)
 	}
 }

@@ -21,7 +21,7 @@ impl Actor for Find {
 	const NAME: &str = "find";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
-		let input = input!(cx, YAZI.input.find(form.prev, form.enter))?;
+		let input = input!(cx, YAZI.input.find(form.prev))?;
 
 		tokio::spawn(async move {
 			let rx = Debounce::new(UnboundedReceiverStream::new(input), Duration::from_millis(50));

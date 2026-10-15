@@ -64,7 +64,7 @@ keymap = [
 	# Operation
 	{ on = "o",         run = "open",                        desc = "Open selected files" },
 	{ on = "O",         run = "open --interactive",          desc = "Open selected files interactively" },
-	{ on = "<Enter>",   run = "open",                        desc = "Open selected files" },
+	{ on = "<Enter>",   run = "smart_enter",                 desc = "Enter the directory, or open the file" },
 	{ on = "<S-Enter>", run = "open --interactive",          desc = "Open selected files interactively" },
 	{ on = "e",         run = "plugin edit",                 desc = "Edit selected files in $EDITOR" },
 	{ on = "y",         run = "yank",                        desc = "Yank selected files (copy)" },
@@ -123,10 +123,8 @@ keymap = [
 	{ on = "F", run = "filter --smart",              desc = "Filter files" },
 
 	# Find
-	{ on = "/",     run = "find --smart --enter",    desc = "Find a file and enter or open it" },
-	{ on = "<C-/>", run = "find --smart",            desc = "Find next file" },
-	{ on = "<C-7>", run = "find --smart",            desc = "Find next file (Ctrl+/ on legacy terminals)" },
-	{ on = "?",     run = "find --previous --smart", desc = "Find previous file" },
+	{ on = "/", run = "find --smart",            desc = "Find next file" },
+	{ on = "?", run = "find --previous --smart", desc = "Find previous file" },
 	{ on = "n", run = "find_arrow",              desc = "Next found" },
 	{ on = "N", run = "find_arrow --previous",   desc = "Previous found" },
 
@@ -345,12 +343,12 @@ keymap = [
 	{ on = "<C-r>", run = "redo",                     desc = "Redo the last operation" },
 
 	# History
-	{ on = "k",      run = "recall -1", desc = "Recall previous input" },
-	{ on = "j",      run = "recall 1",  desc = "Recall next input" },
-	{ on = "<Up>",   run = "recall -1", desc = "Recall previous input" },
-	{ on = "<Down>", run = "recall 1",  desc = "Recall next input" },
-	{ on = "<C-p>",  run = "recall -1", desc = "Recall previous input" },
-	{ on = "<C-n>",  run = "recall 1",  desc = "Recall next input" },
+	{ on = "k",      run = "recall -1",         desc = "Recall previous input" },
+	{ on = "j",      run = "recall 1",          desc = "Recall next input" },
+	{ on = "<Up>",   run = "recall -1",         desc = "Recall previous input" },
+	{ on = "<Down>", run = "recall 1",          desc = "Recall next input" },
+	{ on = "<C-p>",  run = "recall -1 --found", desc = "Previous found, or recall previous input" },
+	{ on = "<C-n>",  run = "recall 1 --found",  desc = "Next found, or recall next input" },
 
 	# Help
 	{ on = "~",    run = "help", desc = "Open help" },
