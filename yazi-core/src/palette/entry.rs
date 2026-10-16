@@ -104,6 +104,14 @@ impl Entry {
 		run.into_iter().chain(matched).collect()
 	}
 
+	pub fn url(&self) -> Option<&UrlBuf> {
+		match self {
+			Self::File { url, .. } | Self::Listed(url) => Some(url),
+			Self::Recent(r) => Some(&r.url),
+			_ => None,
+		}
+	}
+
 	pub fn label(&self) -> Cow<'_, str> {
 		match self {
 			Self::Setting(s) => s.name().into(),

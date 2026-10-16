@@ -72,7 +72,9 @@ impl Cd {
 			while let Some(result) = rx.next().await {
 				match result {
 					InputEvent::Submit(s) => {
-						let Ok(url) = UrlBuf::try_from(s).map(expand_url) else { return };
+						let Ok(url) = UrlBuf::try_from(s.trim().to_owned()).map(expand_url) else {
+							return;
+						};
 						let Ok(url) = engine::absolute(&url).await else { return };
 						let url = clean_url(url);
 

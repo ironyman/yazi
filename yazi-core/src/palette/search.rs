@@ -98,12 +98,25 @@ impl Search {
 			.collect();
 
 		scored.sort_unstable_by_key(|&(score, i)| (Reverse(score), i));
-		let entries =
-			scored.into_iter().take(Self::SHOWN).map(|(_, i)| self.files[i].clone()).collect();
+		let exact = self.exact();
+		let rest = scored
+			.into_iter()
+			.map(|(_, i)| &self.files[i])
+			.filter(|e| e.url() != exact.as_ref().and_then(Entry::url))
+			.take(Self::SHOWN);
+		let entries = exact.iter().chain(rest).cloned().collect();
 
 		let files = PaletteFiles { ticket: self.ticket, entries, done };
 		emit!(Call(relay!(palette:update_files).with_any("files", files)));
 		Instant::now()
+	}
+
+	/// The file the query names as a path, if it exists, e.g. a pasted `C:\Users\` or `src/main.rs`.
+	fn exact(&self) -> Option<Entry> {
+		let rest = self.keyword.strip_prefix(&self.anchor).filter(|_| !self.keyword.is_empty())?;
+		let path = self.root.join(rest);
+		let dir = std::fs::metadata(&path).ok()?.is_dir();
+		Some(Entry::File { url: path.into(), label: self.keyword.clone(), dir })
 	}
 
 	/// Drains pending queries and returns the latest one; `Err` once the palette is gone.

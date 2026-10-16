@@ -55,8 +55,11 @@ function Root:click(event, up)
 	local c = ya.child_at(ui.Rect { x = event.x, y = event.y }, self:reflow())
 	Root._dragging = not up and c or nil
 
-	if tostring(cx.layer) == "mgr" then
+	local layer = tostring(cx.layer)
+	if layer == "mgr" then
 		return c and c.click and c:click(event, up)
+	elseif layer == "palette" and not up and event.is_right then
+		ya.async(function() ya.emit("palette:feed", { ya.clipboard() }) end)
 	end
 end
 

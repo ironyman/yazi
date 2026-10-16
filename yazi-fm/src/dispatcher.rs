@@ -75,7 +75,11 @@ impl<'a> Dispatcher<'a> {
 	}
 
 	fn dispatch_paste(&mut self, str: String) -> Result<()> {
-		if let Some(mut guard) = self.app.core.input.lock_mut() {
+		let core = &mut self.app.core;
+		if core.palette.visible {
+			core.palette.input.feed(str.into())?;
+			core.palette.filter_apply();
+		} else if let Some(mut guard) = core.input.lock_mut() {
 			guard.feed(str.into())?;
 		}
 		Ok(())
