@@ -2465,7 +2465,7 @@ dependencies = [
 
 [[package]]
 name = "myyazi"
-version = "26.10.0"
+version = "26.11.0"
 dependencies = [
  "anyhow",
  "yazi-macro",
