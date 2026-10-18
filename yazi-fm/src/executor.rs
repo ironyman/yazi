@@ -98,6 +98,7 @@ impl<'a> Executor<'a> {
 		on!(arrow);
 		on!(leave);
 		on!(enter);
+		on!(sibling);
 		on!(smart_enter);
 		on!(back);
 		on!(forward);

@@ -59,6 +59,7 @@ pub const ACTIONS: &[&str] = &[
 	"reveal",
 	"seek",
 	"shell",
+	"sibling",
 	"smart_enter",
 	"sort",
 	"spot",

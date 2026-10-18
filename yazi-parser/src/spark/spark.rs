@@ -76,6 +76,7 @@ pub enum Spark<'a> {
 	Reveal(crate::mgr::RevealForm),
 	Seek(crate::mgr::SeekForm),
 	Shell(crate::mgr::ShellForm),
+	Sibling(crate::ArrowForm),
 	SmartEnter(crate::VoidForm),
 	Sort(crate::mgr::SortForm),
 	Spot(crate::mgr::SpotOpt),
@@ -298,6 +299,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::Reveal(b) => b.into_lua(lua),
 			Self::Seek(b) => b.into_lua(lua),
 			Self::Shell(b) => b.into_lua(lua),
+			Self::Sibling(b) => b.into_lua(lua),
 			Self::SmartEnter(b) => b.into_lua(lua),
 			Self::Sort(b) => b.into_lua(lua),
 			Self::Spot(b) => b.into_lua(lua),
@@ -433,7 +435,7 @@ try_from_spark!(
 );
 
 // App
-try_from_spark!(crate::ArrowForm, mgr:arrow, mgr:tab_swap);
+try_from_spark!(crate::ArrowForm, mgr:arrow, mgr:sibling, mgr:tab_swap);
 try_from_spark!(crate::app::ClipboardForm, app:clipboard);
 try_from_spark!(crate::app::DeprecateForm, app:deprecate);
 try_from_spark!(crate::app::DndForm, app:dnd);

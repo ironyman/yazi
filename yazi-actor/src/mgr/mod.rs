@@ -39,6 +39,7 @@ yazi_macro::mod_flat!(
 	reveal
 	seek
 	shell
+	sibling
 	smart_enter
 	sort
 	spot
