@@ -86,6 +86,7 @@ fn mgr() -> Composer<ComposerGet, ComposerSet> {
 
 			b"linemode" => lua.create_string(&**m.linemode.load())?.into_lua(lua)?,
 			b"show_hidden" => m.show_hidden.get().into_lua(lua)?,
+			b"show_dotfiles" => m.show_dotfiles.get().into_lua(lua)?,
 			b"show_symlink" => m.show_symlink.get().into_lua(lua)?,
 			b"show_icons" => m.show_icons.get().into_lua(lua)?,
 			b"show_borders" => m.show_borders.get().into_lua(lua)?,

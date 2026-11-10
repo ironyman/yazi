@@ -17,9 +17,10 @@ pub struct Entries {
 	pub sizes: HashMap<PathBufDyn, u64>,
 	pub ranks: HashMap<PathBufDyn, i64>,
 
-	sorter:      FilesSorter,
-	filter:      Option<Filter>,
-	show_hidden: bool,
+	sorter:        FilesSorter,
+	filter:        Option<Filter>,
+	show_hidden:   bool,
+	show_dotfiles: bool,
 }
 
 impl Deref for Entries {
@@ -33,7 +34,9 @@ impl DerefMut for Entries {
 }
 
 impl Entries {
-	pub fn new(show_hidden: bool) -> Self { Self { show_hidden, ..Default::default() } }
+	pub fn new(show_hidden: bool, show_dotfiles: bool) -> Self {
+		Self { show_hidden, show_dotfiles, ..Default::default() }
+	}
 
 	pub fn update_full(&mut self, files: Vec<File>) {
 		self.ticket = FILES_TICKET.next();
@@ -197,13 +200,11 @@ impl Entries {
 		}
 
 		let (mut hidden, mut items) = if let Some(filter) = &self.filter {
-			files
-				.into_iter()
-				.partition(|(_, f)| (f.is_hidden() && !self.show_hidden) || !filter.matches(f.urn()))
-		} else if self.show_hidden {
+			files.into_iter().partition(|(_, f)| self.conceals(f) || !filter.matches(f.urn()))
+		} else if self.show_hidden && self.show_dotfiles {
 			(HashMap::new(), files)
 		} else {
-			files.into_iter().partition(|(_, f)| f.is_hidden())
+			files.into_iter().partition(|(_, f)| self.conceals(f))
 		};
 
 		if !items.is_empty() {
@@ -252,12 +253,16 @@ impl Entries {
 	fn split_files(&self, files: impl IntoIterator<Item = File>) -> (Vec<File>, Vec<File>) {
 		let files = files.into_iter().filter(|f| !f.key().is_empty());
 		if let Some(filter) = &self.filter {
-			files.partition(|f| (f.is_hidden() && !self.show_hidden) || !filter.matches(f.urn()))
-		} else if self.show_hidden {
+			files.partition(|f| self.conceals(f) || !filter.matches(f.urn()))
+		} else if self.show_hidden && self.show_dotfiles {
 			(vec![], files.collect())
 		} else {
-			files.partition(|f| f.is_hidden())
+			files.partition(|f| self.conceals(f))
 		}
+	}
+
+	fn conceals(&self, file: &File) -> bool {
+		(!self.show_hidden && file.is_hidden()) || (!self.show_dotfiles && file.urn().is_dotfile())
 	}
 }
 
@@ -316,13 +321,23 @@ impl Entries {
 
 	// --- Show hidden
 	pub fn set_show_hidden(&mut self, state: bool) {
-		if mem::replace(&mut self.show_hidden, state) == state {
-			return;
+		if mem::replace(&mut self.show_hidden, state) != state {
+			self.reveal(state);
 		}
+	}
 
+	// --- Show dotfiles
+	pub fn set_show_dotfiles(&mut self, state: bool) {
+		if mem::replace(&mut self.show_dotfiles, state) != state {
+			self.reveal(state);
+		}
+	}
+
+	/// Moves files between `hidden` and `items` after a visibility flag changes,
+	/// only scanning the side that can be affected.
+	fn reveal(&mut self, more: bool) {
 		let len = self.items.len();
-		let take =
-			if self.show_hidden { mem::take(&mut self.hidden) } else { mem::take(&mut self.items) };
+		let take = if more { mem::take(&mut self.hidden) } else { mem::take(&mut self.items) };
 		if take.is_empty() {
 			return;
 		}

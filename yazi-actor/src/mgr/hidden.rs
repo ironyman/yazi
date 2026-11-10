@@ -15,8 +15,13 @@ impl Actor for Hidden {
 	const NAME: &str = "hidden";
 
 	fn act(cx: &mut Ctx, form: Self::Form) -> Result<Data> {
-		let state = form.state.bool(cx.tab().pref.show_hidden);
-		cx.tab_mut().pref.show_hidden = state;
+		let pref = &mut cx.tab_mut().pref;
+		if form.dotfiles {
+			pref.show_dotfiles = form.state.bool(pref.show_dotfiles);
+		} else {
+			pref.show_hidden = form.state.bool(pref.show_hidden);
+		}
+		let (hidden, dotfiles) = (pref.show_hidden, pref.show_dotfiles);
 
 		let hovered = cx.hovered().map(|f| f.key()).owned();
 		let apply = |f: &mut Folder| {
@@ -24,7 +29,8 @@ impl Actor for Hidden {
 				render!();
 				false
 			} else {
-				f.entries.set_show_hidden(state);
+				f.entries.set_show_hidden(hidden);
+				f.entries.set_show_dotfiles(dotfiles);
 				render_and!(f.entries.catchup_revision())
 			}
 		};

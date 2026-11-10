@@ -13,6 +13,7 @@ sort_translit  = false
 sort_fallback  = "alphabetical"
 linemode       = "none"
 show_hidden    = false
+show_dotfiles  = true
 show_symlink   = true
 show_icons     = false
 show_borders   = true

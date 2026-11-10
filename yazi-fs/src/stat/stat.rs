@@ -66,7 +66,7 @@ impl Stat {
 		let mode = r#type.map(StatMode::from_bare).unwrap_or_default();
 
 		#[cfg(unix)]
-		if _url.as_url().urn().is_hidden() {
+		if _url.as_url().urn().is_dotfile() {
 			kind |= StatKind::HIDDEN;
 		}
 

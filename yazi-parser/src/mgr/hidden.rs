@@ -6,7 +6,9 @@ use yazi_shim::mlua::SER_OPT;
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct HiddenForm {
 	#[serde(alias = "0")]
-	pub state: HiddenFormState,
+	pub state:    HiddenFormState,
+	#[serde(default)]
+	pub dotfiles: bool,
 }
 
 impl TryFrom<ActionCow> for HiddenForm {

@@ -25,8 +25,7 @@ pub trait PathLike: DynPath {
 
 	fn is_empty(&self) -> bool { self.dyn_path().is_empty() }
 
-	#[cfg(unix)]
-	fn is_hidden(&self) -> bool { self.dyn_path().is_hidden() }
+	fn is_dotfile(&self) -> bool { self.dyn_path().is_dotfile() }
 
 	fn kind(&self) -> PathKind { self.dyn_path().kind() }
 

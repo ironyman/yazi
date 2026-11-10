@@ -19,6 +19,7 @@ static PENDING: LazyLock<Mutex<HashMap<&'static str, String>>> = LazyLock::new(D
 pub enum Setting {
 	// Tab-specific, also saved as the default for new tabs
 	ShowHidden,
+	ShowDotfiles,
 	Linemode,
 	TabName,
 	SortBy,
@@ -58,6 +59,7 @@ impl Setting {
 	pub fn all() -> impl Iterator<Item = Self> {
 		[
 			Self::ShowHidden,
+			Self::ShowDotfiles,
 			Self::Linemode,
 			Self::TabName,
 			Self::SortBy,
@@ -78,6 +80,7 @@ impl Setting {
 	pub fn name(self) -> &'static str {
 		match self {
 			Self::ShowHidden => "Settings: Show hidden files",
+			Self::ShowDotfiles => "Settings: Show dotfiles",
 			Self::Linemode => "Settings: Linemode",
 			Self::TabName => "Settings: Tab name",
 			Self::SortBy => "Settings: Sort by",
@@ -94,6 +97,7 @@ impl Setting {
 	pub fn kind(self) -> SettingKind {
 		match self {
 			Self::ShowHidden
+			| Self::ShowDotfiles
 			| Self::SortReverse
 			| Self::SortDirFirst
 			| Self::SortSensitive
@@ -110,6 +114,7 @@ impl Setting {
 	pub fn value(self, pref: &Preference) -> Cow<'_, str> {
 		match self {
 			Self::ShowHidden => toggle(pref.show_hidden).into(),
+			Self::ShowDotfiles => toggle(pref.show_dotfiles).into(),
 			Self::Linemode => pref.linemode.as_str().into(),
 			Self::TabName => pref.name.as_str().into(),
 			Self::SortBy => pref.sort_by.into_str().into(),
@@ -142,6 +147,11 @@ impl Setting {
 			Self::ShowHidden => {
 				YAZI.mgr.show_hidden.set(on);
 				(relay!(mgr:hidden, [if on { "show" } else { "hide" }]), "show_hidden", on.into())
+			}
+			Self::ShowDotfiles => {
+				YAZI.mgr.show_dotfiles.set(on);
+				let action = relay!(mgr:hidden, [if on { "show" } else { "hide" }]).with("dotfiles", true);
+				(action, "show_dotfiles", on.into())
 			}
 			Self::Linemode => {
 				YAZI.mgr.linemode.store(Arc::new(value.to_owned()));

@@ -35,7 +35,7 @@ impl Default for Folder {
 	fn default() -> Self {
 		Self {
 			file:    Default::default(),
-			entries: Entries::new(YAZI.mgr.show_hidden.get()),
+			entries: Entries::new(YAZI.mgr.show_hidden.get(), YAZI.mgr.show_dotfiles.get()),
 			stage:   Default::default(),
 			offset:  Default::default(),
 			cursor:  Default::default(),

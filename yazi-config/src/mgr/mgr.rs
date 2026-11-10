@@ -21,13 +21,14 @@ pub struct Mgr {
 
 	// Display
 	#[serde(deserialize_with = "deserialize_linemode")]
-	pub linemode:     ArcSwap<String>,
-	pub show_hidden:  SyncCell<bool>,
-	pub show_symlink: SyncCell<bool>,
-	pub show_icons:   SyncCell<bool>,
-	pub show_borders: SyncCell<bool>,
-	pub scrolloff:    SyncCell<u8>,
-	pub mouse_events: SyncCell<MouseEvents>,
+	pub linemode:      ArcSwap<String>,
+	pub show_hidden:   SyncCell<bool>,
+	pub show_dotfiles: SyncCell<bool>,
+	pub show_symlink:  SyncCell<bool>,
+	pub show_icons:    SyncCell<bool>,
+	pub show_borders:  SyncCell<bool>,
+	pub scrolloff:     SyncCell<u8>,
+	pub mouse_events:  SyncCell<MouseEvents>,
 
 	// Meters
 	pub system_meters:        ArcSwap<Vec<Meter>>,

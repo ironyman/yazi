@@ -127,8 +127,7 @@ impl<'p> PathDyn<'p> {
 
 	pub fn is_empty(self) -> bool { self.encoded_bytes().is_empty() }
 
-	#[cfg(unix)]
-	pub fn is_hidden(self) -> bool {
+	pub fn is_dotfile(self) -> bool {
 		self.name().is_some_and(|n| n.encoded_bytes().first() == Some(&b'.'))
 	}
 

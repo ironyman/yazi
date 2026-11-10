@@ -88,6 +88,7 @@ keymap = [
 	{ on = ";",         run = "shell --interactive",         desc = "Run a shell command" },
 	{ on = ":",         run = "palette",                     desc = "Open command palette" },
 	{ on = ".",         run = "hidden toggle",               desc = "Toggle the visibility of hidden files" },
+	{ on = "<A-.>",     run = "hidden toggle --dotfiles",    desc = "Toggle the visibility of dotfiles" },
 	{ on = "s",         run = "plugin fd",                   desc = "Search files by name via fd" },
 	{ on = "S",         run = "plugin rg",                   desc = "Search files by content via ripgrep" },
 	{ on = "<C-s>",     run = "escape --search",             desc = "Cancel the ongoing search" },
